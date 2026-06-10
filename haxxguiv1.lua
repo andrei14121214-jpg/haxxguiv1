@@ -1,187 +1,124 @@
--- haxxguiv1 ТОЧНАЯ КОПИЯ ИЗ СТУДИИ + ФУНКЦИИ
--- Все размеры, цвета, позиции строго по описанию
--- Работает через loadstring, без вложенных LocalScript
-
+-- haxxguiv1 УПРОЩЁННАЯ (без UIStroke, без TextScaled, надёжные размеры)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "haxxguiv1"
-gui.ResetOnSpawn = true   -- как в студии
-gui.Enabled = true
+gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- Фрейм main
 local main = Instance.new("Frame")
 main.Name = "main"
-main.Position = UDim2.new(0.0997, 0, 0.1054, 0)
-main.Size = UDim2.new(0.547, 0, 0.564, 0)
+main.Position = UDim2.new(0.1, 0, 0.1, 0)
+main.Size = UDim2.new(0, 300, 0, 200)  -- фиксированный размер
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.6
-main.BorderSizePixel = 0
 main.Parent = gui
 
--- UIStroke (чёрный, толщина 1)
-local stroke = Instance.new("UIStroke")
-stroke.Color = Color3.new(0,0,0)
-stroke.Thickness = 1
-stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-stroke.Parent = main
-
--- Заголовок "Haxxx Gui V1"
+-- Заголовок
 local title = Instance.new("TextLabel")
-title.Name = "name"
 title.Text = "Haxxx Gui V1"
 title.Position = UDim2.new(0, 0, 0, 0)
-title.Size = UDim2.new(1, 0, 0.0827, 0)
+title.Size = UDim2.new(1, 0, 0, 20)
 title.BackgroundColor3 = Color3.new(0,0,0)
 title.TextColor3 = Color3.new(1,1,1)
-title.Font = Enum.Font.SourceSansPro
 title.TextSize = 14
-title.TextScaled = false
 title.Parent = main
 
 -- speedinfo
 local speedInfo = Instance.new("TextLabel")
 speedInfo.Name = "speedinfo"
 speedInfo.Text = "speed: 16"
-speedInfo.Position = UDim2.new(0.0365, 0, 0.1004, 0)
-speedInfo.Size = UDim2.new(0.1365, 0, 0.0787, 0)
+speedInfo.Position = UDim2.new(0, 10, 0, 30)
+speedInfo.Size = UDim2.new(0, 100, 0, 20)
 speedInfo.BackgroundColor3 = Color3.new(0,0,0)
 speedInfo.TextColor3 = Color3.new(1,1,1)
-speedInfo.TextScaled = true
-speedInfo.Font = Enum.Font.SourceSans
+speedInfo.TextSize = 14
 speedInfo.Parent = main
 
--- Кнопка "-" скорости
+-- Кнопка "-"
 local btnSpeedMinus = Instance.new("TextButton")
-btnSpeedMinus.Name = "-"
 btnSpeedMinus.Text = "-"
-btnSpeedMinus.Position = UDim2.new(0.0082, 0, 0.1004, 0)
-btnSpeedMinus.Size = UDim2.new(0.0282, 0, 0.0787, 0)
+btnSpeedMinus.Position = UDim2.new(0, 5, 0, 30)
+btnSpeedMinus.Size = UDim2.new(0, 20, 0, 20)
 btnSpeedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 btnSpeedMinus.TextColor3 = Color3.new(0,0,0)
-btnSpeedMinus.TextScaled = true
-btnSpeedMinus.Font = Enum.Font.SourceSans
+btnSpeedMinus.TextSize = 14
 btnSpeedMinus.Parent = main
 
--- Кнопка "+" скорости
+-- Кнопка "+"
 local btnSpeedPlus = Instance.new("TextButton")
-btnSpeedPlus.Name = "+"
 btnSpeedPlus.Text = "+"
-btnSpeedPlus.Position = UDim2.new(0.1729, 0, 0.1004, 0)
-btnSpeedPlus.Size = UDim2.new(0.0282, 0, 0.0787, 0)
+btnSpeedPlus.Position = UDim2.new(0, 115, 0, 30)
+btnSpeedPlus.Size = UDim2.new(0, 20, 0, 20)
 btnSpeedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 btnSpeedPlus.TextColor3 = Color3.new(0,0,0)
-btnSpeedPlus.TextScaled = true
-btnSpeedPlus.Font = Enum.Font.SourceSans
+btnSpeedPlus.TextSize = 14
 btnSpeedPlus.Parent = main
 
 -- jpinfo
 local jpInfo = Instance.new("TextLabel")
 jpInfo.Name = "jpinfo"
 jpInfo.Text = "jp: 7.2"
-jpInfo.Position = UDim2.new(0.0365, 0, 0.2185, 0)
-jpInfo.Size = UDim2.new(0.1365, 0, 0.0787, 0)
+jpInfo.Position = UDim2.new(0, 10, 0, 60)
+jpInfo.Size = UDim2.new(0, 100, 0, 20)
 jpInfo.BackgroundColor3 = Color3.new(0,0,0)
 jpInfo.TextColor3 = Color3.new(1,1,1)
-jpInfo.TextScaled = true
-jpInfo.Font = Enum.Font.SourceSans
+jpInfo.TextSize = 14
 jpInfo.Parent = main
 
--- Кнопка "-2" прыжка
+-- Кнопка "-2"
 local btnJumpMinus = Instance.new("TextButton")
-btnJumpMinus.Name = "-2"
 btnJumpMinus.Text = "-"
-btnJumpMinus.Position = UDim2.new(0.0082, 0, 0.2185, 0)
-btnJumpMinus.Size = UDim2.new(0.0282, 0, 0.0787, 0)
+btnJumpMinus.Position = UDim2.new(0, 5, 0, 60)
+btnJumpMinus.Size = UDim2.new(0, 20, 0, 20)
 btnJumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 btnJumpMinus.TextColor3 = Color3.new(0,0,0)
-btnJumpMinus.TextScaled = true
-btnJumpMinus.Font = Enum.Font.SourceSans
+btnJumpMinus.TextSize = 14
 btnJumpMinus.Parent = main
 
--- Кнопка "+2" прыжка
+-- Кнопка "+2"
 local btnJumpPlus = Instance.new("TextButton")
-btnJumpPlus.Name = "+2"
 btnJumpPlus.Text = "+"
-btnJumpPlus.Position = UDim2.new(0.1729, 0, 0.2185, 0)
-btnJumpPlus.Size = UDim2.new(0.0282, 0, 0.0787, 0)
+btnJumpPlus.Position = UDim2.new(0, 115, 0, 60)
+btnJumpPlus.Size = UDim2.new(0, 20, 0, 20)
 btnJumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 btnJumpPlus.TextColor3 = Color3.new(0,0,0)
-btnJumpPlus.TextScaled = true
-btnJumpPlus.Font = Enum.Font.SourceSans
+btnJumpPlus.TextSize = 14
 btnJumpPlus.Parent = main
 
 -- Flybttn
 local flyBtn = Instance.new("TextButton")
 flyBtn.Name = "Flybttn"
 flyBtn.Text = "FLY"
-flyBtn.Position = UDim2.new(0.2245, 0, 0.1004, 0)
-flyBtn.Size = UDim2.new(0, 88, 0, 40)
+flyBtn.Position = UDim2.new(0, 150, 0, 30)
+flyBtn.Size = UDim2.new(0, 60, 0, 25)
 flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
-flyBtn.TextScaled = true
-flyBtn.Font = Enum.Font.SourceSans
+flyBtn.TextSize = 14
 flyBtn.Parent = main
 
 -- noclip
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Name = "noclip"
 noclipBtn.Text = "NOCLIP"
-noclipBtn.Position = UDim2.new(0.2245, 0, 0.2185, 0)
-noclipBtn.Size = UDim2.new(0, 88, 0, 40)
+noclipBtn.Position = UDim2.new(0, 150, 0, 60)
+noclipBtn.Size = UDim2.new(0, 60, 0, 25)
 noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
-noclipBtn.TextScaled = true
-noclipBtn.Font = Enum.Font.SourceSans
+noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- ========== ЛОГИКА (весь функционал) ==========
-local function updateSpeed(v)
-    speedInfo.Text = "speed: " .. math.floor(v)
-end
-local function getSpeed()
-    local c = player.Character
-    if not c then return 16 end
-    local h = c:FindFirstChild("Humanoid")
-    return h and h.WalkSpeed or 16
-end
-local function setSpeed(v)
-    v = math.clamp(v, 0, 500)
-    local c = player.Character
-    if c then
-        local h = c:FindFirstChild("Humanoid")
-        if h then
-            h.WalkSpeed = v
-            updateSpeed(v)
-        end
-    end
-end
+-- ===== ЛОГИКА (та же, что и раньше) =====
+local function updateSpeed(v) speedInfo.Text = "speed: " .. math.floor(v) end
+local function getSpeed() local c = player.Character if not c then return 16 end local h = c:FindFirstChild("Humanoid") return h and h.WalkSpeed or 16 end
+local function setSpeed(v) v = math.clamp(v, 0, 500) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.WalkSpeed = v updateSpeed(v) end end end
 btnSpeedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 btnSpeedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
-local function updateJump(v)
-    jpInfo.Text = "jp: " .. string.format("%.1f", v)
-end
-local function getJump()
-    local c = player.Character
-    if not c then return 7.2 end
-    local h = c:FindFirstChild("Humanoid")
-    return h and h.JumpPower or 7.2
-end
-local function setJump(v)
-    v = math.clamp(v, 7.2, 200)
-    local c = player.Character
-    if c then
-        local h = c:FindFirstChild("Humanoid")
-        if h then
-            h.UseJumpPower = true
-            h.JumpPower = v
-            updateJump(v)
-        end
-    end
-end
+local function updateJump(v) jpInfo.Text = "jp: " .. string.format("%.1f", v) end
+local function getJump() local c = player.Character if not c then return 7.2 end local h = c:FindFirstChild("Humanoid") return h and h.JumpPower or 7.2 end
+local function setJump(v) v = math.clamp(v, 7.2, 200) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.UseJumpPower = true h.JumpPower = v updateJump(v) end end end
 btnJumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 2) end)
 btnJumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 2) end)
 
@@ -197,10 +134,7 @@ local function startFly()
     local hrp = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildOfClass("Humanoid")
     if not hrp then return end
-    if hum then
-        hum.PlatformStand = true
-        hum:ChangeState(Enum.HumanoidStateType.Freefall)
-    end
+    if hum then hum.PlatformStand = true hum:ChangeState(Enum.HumanoidStateType.Freefall) end
     bodyGyro = Instance.new("BodyGyro")
     bodyGyro.MaxTorque = Vector3.new(9e9,9e9,9e9)
     bodyGyro.P = 9e4
@@ -233,10 +167,7 @@ local function stopFly()
     local char = player.Character
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then
-            hum.PlatformStand = false
-            hum:ChangeState(Enum.HumanoidStateType.Landed)
-        end
+        if hum then hum.PlatformStand = false hum:ChangeState(Enum.HumanoidStateType.Landed) end
     end
 end
 flyBtn.MouseButton1Click:Connect(function()
@@ -245,11 +176,7 @@ flyBtn.MouseButton1Click:Connect(function()
     if flying then startFly() else stopFly() end
 end)
 player.CharacterAdded:Connect(function()
-    if flying then
-        stopFly()
-        flying = false
-        flyBtn.Text = "FLY"
-    end
+    if flying then stopFly() flying = false flyBtn.Text = "FLY" end
 end)
 
 -- NOCLIP
@@ -260,9 +187,7 @@ local function noclipLoop()
     local char = player.Character
     if not char then return end
     for _, part in ipairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.CanCollide = false
-        end
+        if part:IsA("BasePart") then part.CanCollide = false end
     end
 end
 noclipBtn.MouseButton1Click:Connect(function()
@@ -289,7 +214,6 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- Обновление отображения при смене персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -299,4 +223,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("haxxguiv1 загружен в точности как в студии. Кнопки работают.")
+print("Упрощённый GUI загружен. Кнопки и функции работают.")
