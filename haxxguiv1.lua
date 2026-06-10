@@ -1,4 +1,4 @@
--- haxxguiv1: полностью рабочий GUI с кнопкой System Broken в окне hubs
+-- haxxguiv1: добавлен FLING (отбрасывает игроков)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,8 +9,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР (основное окно + кнопка HUBS)
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 420, 0, 170)
-container.Position = UDim2.new(0.5, -210, 0.5, -85)
+container.Size = UDim2.new(0, 480, 0, 170)
+container.Position = UDim2.new(0.5, -240, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 395, 0, 170)
+main.Size = UDim2.new(0, 455, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -36,17 +36,17 @@ title.Parent = main
 
 -- === Строка скорости ===
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0, 80, 0, 25)
+speedLabel.Size = UDim2.new(0, 70, 0, 25)
 speedLabel.Position = UDim2.new(0, 10, 0, 30)
 speedLabel.BackgroundColor3 = Color3.new(0,0,0)
 speedLabel.Text = "speed: 16"
 speedLabel.TextColor3 = Color3.new(1,1,1)
-speedLabel.TextSize = 14
+speedLabel.TextSize = 12
 speedLabel.Parent = main
 
 local speedMinus = Instance.new("TextButton")
 speedMinus.Size = UDim2.new(0, 25, 0, 25)
-speedMinus.Position = UDim2.new(0, 95, 0, 30)
+speedMinus.Position = UDim2.new(0, 85, 0, 30)
 speedMinus.Text = "-"
 speedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedMinus.TextColor3 = Color3.new(0,0,0)
@@ -55,7 +55,7 @@ speedMinus.Parent = main
 
 local speedPlus = Instance.new("TextButton")
 speedPlus.Size = UDim2.new(0, 25, 0, 25)
-speedPlus.Position = UDim2.new(0, 125, 0, 30)
+speedPlus.Position = UDim2.new(0, 115, 0, 30)
 speedPlus.Text = "+"
 speedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedPlus.TextColor3 = Color3.new(0,0,0)
@@ -63,27 +63,27 @@ speedPlus.TextSize = 16
 speedPlus.Parent = main
 
 local flyBtn = Instance.new("TextButton")
-flyBtn.Size = UDim2.new(0, 55, 0, 25)
-flyBtn.Position = UDim2.new(0, 170, 0, 30)
+flyBtn.Size = UDim2.new(0, 50, 0, 25)
+flyBtn.Position = UDim2.new(0, 155, 0, 30)
 flyBtn.Text = "FLY"
 flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
-flyBtn.TextSize = 14
+flyBtn.TextSize = 12
 flyBtn.Parent = main
 
 -- === Строка прыжка ===
 local jpLabel = Instance.new("TextLabel")
-jpLabel.Size = UDim2.new(0, 80, 0, 25)
+jpLabel.Size = UDim2.new(0, 70, 0, 25)
 jpLabel.Position = UDim2.new(0, 10, 0, 65)
 jpLabel.BackgroundColor3 = Color3.new(0,0,0)
 jpLabel.Text = "jp: 7.2"
 jpLabel.TextColor3 = Color3.new(1,1,1)
-jpLabel.TextSize = 14
+jpLabel.TextSize = 12
 jpLabel.Parent = main
 
 local jumpMinus = Instance.new("TextButton")
 jumpMinus.Size = UDim2.new(0, 25, 0, 25)
-jumpMinus.Position = UDim2.new(0, 95, 0, 65)
+jumpMinus.Position = UDim2.new(0, 85, 0, 65)
 jumpMinus.Text = "-"
 jumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpMinus.TextColor3 = Color3.new(0,0,0)
@@ -92,7 +92,7 @@ jumpMinus.Parent = main
 
 local jumpPlus = Instance.new("TextButton")
 jumpPlus.Size = UDim2.new(0, 25, 0, 25)
-jumpPlus.Position = UDim2.new(0, 125, 0, 65)
+jumpPlus.Position = UDim2.new(0, 115, 0, 65)
 jumpPlus.Text = "+"
 jumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpPlus.TextColor3 = Color3.new(0,0,0)
@@ -100,27 +100,27 @@ jumpPlus.TextSize = 16
 jumpPlus.Parent = main
 
 local noclipBtn = Instance.new("TextButton")
-noclipBtn.Size = UDim2.new(0, 70, 0, 25)
-noclipBtn.Position = UDim2.new(0, 170, 0, 65)
+noclipBtn.Size = UDim2.new(0, 60, 0, 25)
+noclipBtn.Position = UDim2.new(0, 155, 0, 65)
 noclipBtn.Text = "NOCLIP"
 noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
-noclipBtn.TextSize = 14
+noclipBtn.TextSize = 12
 noclipBtn.Parent = main
 
 -- === Строка FOV ===
 local fovLabel = Instance.new("TextLabel")
-fovLabel.Size = UDim2.new(0, 80, 0, 25)
+fovLabel.Size = UDim2.new(0, 70, 0, 25)
 fovLabel.Position = UDim2.new(0, 10, 0, 100)
 fovLabel.BackgroundColor3 = Color3.new(0,0,0)
 fovLabel.Text = "fov: 70"
 fovLabel.TextColor3 = Color3.new(1,1,1)
-fovLabel.TextSize = 14
+fovLabel.TextSize = 12
 fovLabel.Parent = main
 
 local fovMinus = Instance.new("TextButton")
 fovMinus.Size = UDim2.new(0, 25, 0, 25)
-fovMinus.Position = UDim2.new(0, 95, 0, 100)
+fovMinus.Position = UDim2.new(0, 85, 0, 100)
 fovMinus.Text = "-"
 fovMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 fovMinus.TextColor3 = Color3.new(0,0,0)
@@ -129,17 +129,17 @@ fovMinus.Parent = main
 
 local fovPlus = Instance.new("TextButton")
 fovPlus.Size = UDim2.new(0, 25, 0, 25)
-fovPlus.Position = UDim2.new(0, 125, 0, 100)
+fovPlus.Position = UDim2.new(0, 115, 0, 100)
 fovPlus.Text = "+"
 fovPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ ESP, AIM, INVIS ===
+-- === КНОПКИ: ESP, AIM, FLING, INVIS ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 55, 0, 25)
-espBtn.Position = UDim2.new(0, 170, 0, 100)
+espBtn.Size = UDim2.new(0, 50, 0, 25)
+espBtn.Position = UDim2.new(0, 155, 0, 100)
 espBtn.Text = "ESP"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
@@ -147,17 +147,26 @@ espBtn.TextSize = 12
 espBtn.Parent = main
 
 local aimBtn = Instance.new("TextButton")
-aimBtn.Size = UDim2.new(0, 55, 0, 25)
-aimBtn.Position = UDim2.new(0, 230, 0, 100)
+aimBtn.Size = UDim2.new(0, 50, 0, 25)
+aimBtn.Position = UDim2.new(0, 210, 0, 100)
 aimBtn.Text = "AIM"
 aimBtn.BackgroundColor3 = Color3.new(0,0,0)
 aimBtn.TextColor3 = Color3.new(1,1,1)
 aimBtn.TextSize = 12
 aimBtn.Parent = main
 
+local flingBtn = Instance.new("TextButton")
+flingBtn.Size = UDim2.new(0, 50, 0, 25)
+flingBtn.Position = UDim2.new(0, 265, 0, 100)
+flingBtn.Text = "FLING"
+flingBtn.BackgroundColor3 = Color3.new(0,0,0)
+flingBtn.TextColor3 = Color3.new(1,1,1)
+flingBtn.TextSize = 12
+flingBtn.Parent = main
+
 local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 55, 0, 25)
-invisBtn.Position = UDim2.new(0, 290, 0, 100)
+invisBtn.Size = UDim2.new(0, 50, 0, 25)
+invisBtn.Position = UDim2.new(0, 320, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
@@ -187,7 +196,6 @@ hubframe.Active = true
 hubframe.Draggable = true
 hubframe.Parent = gui
 
--- Заголовок
 local hubTitle = Instance.new("TextLabel")
 hubTitle.Size = UDim2.new(1, 0, 0, 20)
 hubTitle.Position = UDim2.new(0, 0, 0, 0)
@@ -197,7 +205,6 @@ hubTitle.TextColor3 = Color3.new(1,1,1)
 hubTitle.TextSize = 14
 hubTitle.Parent = hubframe
 
--- ScrollingFrame
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(1, 0, 1, -20)
 scrollFrame.Position = UDim2.new(0, 0, 0, 20)
@@ -211,7 +218,6 @@ listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Padding = UDim.new(0, 5)
 listLayout.Parent = scrollFrame
 
--- Функция добавления кнопок
 local function addHubButton(text, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -10, 0, 30)
@@ -223,7 +229,6 @@ local function addHubButton(text, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- === КНОПКА SYSTEM BROKEN (loadstring) ===
 addHubButton("System Broken", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script"))()
 end)
@@ -263,7 +268,6 @@ addHubButton("Jump Boost x3", function()
     end
 end)
 
--- Обновление размера Canvas
 local function updateCanvas()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
 end
@@ -611,6 +615,90 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
+-- === FLING ===
+local flingActive = false
+local flingConnection = nil
+local flingForce = 10000
+
+local function getNearbyPlayers()
+    local nearby = {}
+    local char = player.Character
+    if not char then return nearby end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nearby end
+    local myPos = hrp.Position
+    for _, plr in ipairs(game.Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local targetHrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if targetHrp then
+                local dist = (targetHrp.Position - myPos).Magnitude
+                if dist < 30 then
+                    table.insert(nearby, plr)
+                end
+            end
+        end
+    end
+    return nearby
+end
+
+local function flingPlayers()
+    if not flingActive then return end
+    local char = player.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
+    local myPos = hrp.Position
+    for _, plr in ipairs(getNearbyPlayers()) do
+        local targetChar = plr.Character
+        if targetChar then
+            local targetHrp = targetChar:FindFirstChild("HumanoidRootPart")
+            if targetHrp then
+                local dir = (targetHrp.Position - myPos).unit
+                local vel = dir * flingForce
+                local bv = Instance.new("BodyVelocity")
+                bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+                bv.Velocity = vel
+                bv.Parent = targetHrp
+                game:GetService("Debris"):AddItem(bv, 0.5)
+            end
+        end
+    end
+end
+
+local function startFling()
+    if flingConnection then flingConnection:Disconnect() end
+    flingConnection = runService.Heartbeat:Connect(function()
+        if flingActive then
+            flingPlayers()
+        end
+    end)
+end
+
+local function stopFling()
+    if flingConnection then
+        flingConnection:Disconnect()
+        flingConnection = nil
+    end
+end
+
+flingBtn.MouseButton1Click:Connect(function()
+    flingActive = not flingActive
+    flingBtn.Text = flingActive and "FLING ON" or "FLING"
+    if flingActive then
+        startFling()
+    else
+        stopFling()
+    end
+end)
+
+player.CharacterAdded:Connect(function()
+    if flingActive then
+        flingActive = false
+        flingBtn.Text = "FLING"
+        stopFling()
+    end
+end)
+
 -- === DRAG ===
 local function updateHubframePosition()
     if not container or not hubframe then return end
@@ -660,4 +748,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: полностью рабочий, System Broken в окне hubs")
+print("Haxxx Gui V1: FLING добавлен (отбрасывает игроков в радиусе 30)")
