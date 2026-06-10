@@ -1,4 +1,4 @@
--- haxxguiv1 с кнопкой HUBS внутри GUI и привязанным окном справа
+-- haxxguiv1: кнопка HUBS приклеена слева, окно справа (независимое)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,16 +7,25 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
+-- Контейнер для main и кнопки HUBS (чтобы двигались вместе)
+local container = Instance.new("Frame")
+container.Name = "Container"
+container.Size = UDim2.new(0, 345, 0, 170) -- ширина main (320) + кнопка (25)
+container.Position = UDim2.new(0.5, -172, 0.5, -85)
+container.BackgroundTransparency = 1
+container.Active = true
+container.Draggable = true
+container.Parent = gui
+
+-- Основное окно main
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 320, 0, 170)
-main.Position = UDim2.new(0.5, -160, 0.5, -85)
+main.Position = UDim2.new(0, 25, 0, 0) -- сдвинуто вправо, чтобы слева была кнопка
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
-main.Active = true
-main.Draggable = true
-main.Parent = gui
+main.Parent = container
 
--- Заголовок для перетаскивания
+-- Заголовок (для перетаскивания контейнера, а не main)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -25,6 +34,21 @@ title.Text = "Haxxx Gui V1"
 title.TextColor3 = Color3.new(1,1,1)
 title.TextSize = 14
 title.Parent = main
+-- Перетаскивание осуществляется через контейнер, поэтому делаем его draggable, а main не draggable
+main.Active = false
+main.Draggable = false
+
+-- Кнопка HUBS (приклеена слева в контейнере)
+local hubsBtn = Instance.new("TextButton")
+hubsBtn.Name = "HUBS"
+hubsBtn.Size = UDim2.new(0, 25, 1, 0) -- ширина 25, высота как у контейнера
+hubsBtn.Position = UDim2.new(0, 0, 0, 0)
+hubsBtn.Text = "HUBS"
+hubsBtn.TextSize = 12
+hubsBtn.TextWrapped = true
+hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
+hubsBtn.TextColor3 = Color3.new(1,1,1)
+hubsBtn.Parent = container
 
 -- === Строка скорости ===
 local speedLabel = Instance.new("TextLabel")
@@ -110,27 +134,16 @@ espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- === Кнопка HUBS (внутри main) ===
-local hubsBtn = Instance.new("TextButton")
-hubsBtn.Size = UDim2.new(0, 100, 0, 25)
-hubsBtn.Position = UDim2.new(0, 120, 0, 100)
-hubsBtn.Text = "HUBS"
-hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
-hubsBtn.TextColor3 = Color3.new(1,1,1)
-hubsBtn.TextSize = 14
-hubsBtn.Parent = main
-
--- === Фрейм hubframe (справа от main, синхронно двигается) ===
+-- === ФРЕЙМ hubframe (независимый, справа, можно двигать) ===
 local hubframe = Instance.new("Frame")
 hubframe.Name = "hubframe"
-hubframe.Size = UDim2.new(0, 150, 0, 170)  -- высота как у main, ширина меньше
-hubframe.Position = UDim2.new(0, main.Size.X.Offset + 10, 0, 0)  -- временно
+hubframe.Size = UDim2.new(0, 150, 0, 170)
+hubframe.Position = UDim2.new(0, container.Position.X.Offset + container.Size.X.Offset + 10, 0, container.Position.Y.Offset)
 hubframe.BackgroundColor3 = Color3.fromRGB(40,40,40)
 hubframe.BackgroundTransparency = 0.2
 hubframe.Visible = false
 hubframe.Parent = gui
 
--- Заголовок hubframe (за который можно перетаскивать отдельно)
 local hubTitle = Instance.new("TextLabel")
 hubTitle.Size = UDim2.new(1, 0, 0, 20)
 hubTitle.Position = UDim2.new(0, 0, 0, 0)
@@ -140,87 +153,55 @@ hubTitle.TextColor3 = Color3.new(1,1,1)
 hubTitle.TextSize = 14
 hubTitle.Parent = hubframe
 
--- Контент
 local hubContent = Instance.new("TextLabel")
 hubContent.Size = UDim2.new(1, 0, 1, -20)
 hubContent.Position = UDim2.new(0, 0, 0, 20)
 hubContent.BackgroundTransparency = 1
-hubContent.Text = "Содержимое хабов\n(можно добавить ссылки)"
+hubContent.Text = "Содержимое хабов"
 hubContent.TextColor3 = Color3.new(1,1,1)
 hubContent.TextSize = 12
 hubContent.TextWrapped = true
 hubContent.Parent = hubframe
 
--- Функция обновления позиции hubframe (привязка к main)
-local function updateHubframePosition()
-    if not main or not hubframe then return end
-    local mainPos = main.AbsolutePosition
-    local mainSize = main.AbsoluteSize
-    hubframe.Position = UDim2.new(0, mainPos.X + mainSize.X + 10, 0, mainPos.Y)
-end
-
--- Привязываем обновление позиции к перемещению main
-local dragEnabled = false
-local dragStart, startPos
-title.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragEnabled = true
-        dragStart = input.Position
-        startPos = main.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragEnabled = false
-                updateHubframePosition()
-            end
+-- Перетаскивание hubframe (независимое)
+local dragHub = false
+local dragHubStart, dragHubPos
+hubTitle.InputBegan:Connect(function(inp)
+    if inp.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragHub = true
+        dragHubStart = inp.Position
+        dragHubPos = hubframe.Position
+        inp.Changed:Connect(function()
+            if inp.UserInputState == Enum.UserInputState.End then dragHub = false end
         end)
     end
 end)
-title.InputChanged:Connect(function(input)
-    if dragEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        updateHubframePosition()
+hubTitle.InputChanged:Connect(function(inp)
+    if dragHub and inp.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = inp.Position - dragHubStart
+        hubframe.Position = UDim2.new(0, dragHubPos.X.Offset + delta.X, 0, dragHubPos.Y.Offset + delta.Y)
     end
 end)
 
--- При изменении размера экрана или main (но main не меняет размер, поэтому только при старте)
-updateHubframePosition()
-game:GetService("RunService").RenderStepped:Connect(function()
-    if hubframe.Visible then updateHubframePosition() end
-end)
-
--- Логика показа/скрытия hubframe
+-- Логика показа/скрытия hubframe при нажатии на кнопку HUBS
 local hubsOpen = false
 hubsBtn.MouseButton1Click:Connect(function()
     hubsOpen = not hubsOpen
     hubframe.Visible = hubsOpen
-    hubsBtn.Text = hubsOpen and "HUBS ↑" or "HUBS"
-    if hubsOpen then updateHubframePosition() end
-end)
-
--- Перетаскивание hubframe отдельно (за заголовок)
-local dragHubEnabled = false
-local dragHubStart, dragHubStartPos
-hubTitle.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragHubEnabled = true
-        dragHubStart = input.Position
-        dragHubStartPos = hubframe.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragHubEnabled = false
-            end
-        end)
-    end
-end)
-hubTitle.InputChanged:Connect(function(input)
-    if dragHubEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragHubStart
-        hubframe.Position = UDim2.new(0, dragHubStartPos.X.Offset + delta.X, 0, dragHubStartPos.Y.Offset + delta.Y)
+    hubsBtn.Text = hubsOpen and "←" or "HUBS"
+    if hubsOpen then
+        -- при открытии позиционируем справа от контейнера
+        local contPos = container.AbsolutePosition
+        local contSize = container.AbsoluteSize
+        hubframe.Position = UDim2.new(0, contPos.X + contSize.X + 10, 0, contPos.Y)
     end
 end)
 
--- ========== ЛОГИКА СКОРОСТИ ==========
+-- Если нужно автоматически обновлять позицию hubframe при движении контейнера (опционально)
+-- но по условию окно хабов НЕ привязано, поэтому не будем обновлять. Оставим как есть.
+
+-- ========== ЛОГИКА СКОРОСТИ, ПРЫЖКА, FLY, NOCLIP, ESP ==========
+-- (та же, что и в предыдущем работающем варианте)
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed()
     local c = player.Character
@@ -242,7 +223,6 @@ end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- ========== ПРЫЖОК (шаг +1/-1) ==========
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
 local function getJump()
     local c = player.Character
@@ -265,7 +245,7 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- ========== FLY ==========
+-- FLY
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -332,7 +312,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== NOCLIP ==========
+-- NOCLIP
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -372,7 +352,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== ESP (упрощённый надёжный) ==========
+-- ESP (упрощённый)
 local espActive = false
 local espHighlights = {}
 local espConn = nil
@@ -424,7 +404,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- Обновление отображения при появлении персонажа
+-- Обновление отображения при смене персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -434,4 +414,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1 загружен: кнопка HUBS внутри GUI, окно справа привязано к основному окну.")
+print("Haxxx Gui V1 загружен: кнопка HUBS приклеена слева, окно справа независимо.")
