@@ -1,123 +1,140 @@
--- haxxguiv1 ULTRA SIMPLE (без лишних украшений)
+-- haxxguiv1 с drag и выровненными кнопками
 local player = game.Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
--- Удаляем старый GUI
-local old = playerGui:FindFirstChild("haxxguiv1")
-if old then old:Destroy() end
-
--- Создаём экран
 local gui = Instance.new("ScreenGui")
 gui.Name = "haxxguiv1"
-gui.ResetOnSpawn = false
-gui.Parent = playerGui
+gui.ResetOnSpawn = true
+gui.Parent = player:WaitForChild("PlayerGui")
 
--- Основная панель (серый фон)
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 200)
-frame.Position = UDim2.new(0, 100, 0, 100)
-frame.BackgroundColor3 = Color3.fromRGB(80,80,80)
-frame.BorderSizePixel = 1
-frame.BorderColor3 = Color3.new(0,0,0)
-frame.Parent = gui
+local main = Instance.new("Frame")
+main.Name = "main"
+main.Size = UDim2.new(0, 260, 0, 120)
+main.Position = UDim2.new(0.5, -130, 0.5, -60)
+main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
+main.BackgroundTransparency = 0.2
+main.Active = true
+main.Draggable = true
+main.Parent = gui
 
--- Заголовок
+-- заголовок
 local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, 0, 0, 25)
+title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundColor3 = Color3.new(0,0,0)
+title.BackgroundColor3 = Color3.fromRGB(0,0,0)
 title.Text = "Haxxx Gui V1"
 title.TextColor3 = Color3.new(1,1,1)
-title.TextSize = 16
-title.Parent = frame
+title.TextSize = 14
+title.Parent = main
 
 -- speedinfo
-local speedLabel = Instance.new("TextLabel")
-speedLabel.Name = "speedinfo"
-speedLabel.Size = UDim2.new(0, 100, 0, 25)
-speedLabel.Position = UDim2.new(0, 10, 0, 35)
-speedLabel.BackgroundColor3 = Color3.new(0,0,0)
-speedLabel.Text = "speed: 16"
-speedLabel.TextColor3 = Color3.new(1,1,1)
-speedLabel.TextSize = 14
-speedLabel.Parent = frame
+local speedInfo = Instance.new("TextLabel")
+speedInfo.Name = "speedinfo"
+speedInfo.Size = UDim2.new(0, 80, 0, 25)
+speedInfo.Position = UDim2.new(0, 10, 0, 30)
+speedInfo.BackgroundColor3 = Color3.fromRGB(0,0,0)
+speedInfo.Text = "speed: 16"
+speedInfo.TextColor3 = Color3.new(1,1,1)
+speedInfo.TextSize = 14
+speedInfo.Parent = main
 
--- кнопка "-"
 local minusSpeed = Instance.new("TextButton")
+minusSpeed.Name = "-"
 minusSpeed.Size = UDim2.new(0, 25, 0, 25)
-minusSpeed.Position = UDim2.new(0, 5, 0, 35)
+minusSpeed.Position = UDim2.new(0, 95, 0, 30)
 minusSpeed.Text = "-"
-minusSpeed.BackgroundColor3 = Color3.fromRGB(150,150,150)
+minusSpeed.BackgroundColor3 = Color3.fromRGB(112,112,112)
 minusSpeed.TextColor3 = Color3.new(0,0,0)
 minusSpeed.TextSize = 16
-minusSpeed.Parent = frame
+minusSpeed.Parent = main
 
--- кнопка "+"
 local plusSpeed = Instance.new("TextButton")
+plusSpeed.Name = "+"
 plusSpeed.Size = UDim2.new(0, 25, 0, 25)
-plusSpeed.Position = UDim2.new(0, 115, 0, 35)
+plusSpeed.Position = UDim2.new(0, 125, 0, 30)
 plusSpeed.Text = "+"
-plusSpeed.BackgroundColor3 = Color3.fromRGB(150,150,150)
+plusSpeed.BackgroundColor3 = Color3.fromRGB(112,112,112)
 plusSpeed.TextColor3 = Color3.new(0,0,0)
 plusSpeed.TextSize = 16
-plusSpeed.Parent = frame
+plusSpeed.Parent = main
 
 -- jpinfo
-local jumpLabel = Instance.new("TextLabel")
-jumpLabel.Name = "jpinfo"
-jumpLabel.Size = UDim2.new(0, 100, 0, 25)
-jumpLabel.Position = UDim2.new(0, 10, 0, 70)
-jumpLabel.BackgroundColor3 = Color3.new(0,0,0)
-jumpLabel.Text = "jp: 7.2"
-jumpLabel.TextColor3 = Color3.new(1,1,1)
-jumpLabel.TextSize = 14
-jumpLabel.Parent = frame
+local jpInfo = Instance.new("TextLabel")
+jpInfo.Name = "jpinfo"
+jpInfo.Size = UDim2.new(0, 80, 0, 25)
+jpInfo.Position = UDim2.new(0, 10, 0, 65)
+jpInfo.BackgroundColor3 = Color3.fromRGB(0,0,0)
+jpInfo.Text = "jp: 7.2"
+jpInfo.TextColor3 = Color3.new(1,1,1)
+jpInfo.TextSize = 14
+jpInfo.Parent = main
 
--- кнопка "-2"
 local minusJump = Instance.new("TextButton")
+minusJump.Name = "-2"
 minusJump.Size = UDim2.new(0, 25, 0, 25)
-minusJump.Position = UDim2.new(0, 5, 0, 70)
+minusJump.Position = UDim2.new(0, 95, 0, 65)
 minusJump.Text = "-2"
-minusJump.BackgroundColor3 = Color3.fromRGB(150,150,150)
+minusJump.BackgroundColor3 = Color3.fromRGB(112,112,112)
 minusJump.TextColor3 = Color3.new(0,0,0)
 minusJump.TextSize = 14
-minusJump.Parent = frame
+minusJump.Parent = main
 
--- кнопка "+2"
 local plusJump = Instance.new("TextButton")
+plusJump.Name = "+2"
 plusJump.Size = UDim2.new(0, 25, 0, 25)
-plusJump.Position = UDim2.new(0, 115, 0, 70)
+plusJump.Position = UDim2.new(0, 125, 0, 65)
 plusJump.Text = "+2"
-plusJump.BackgroundColor3 = Color3.fromRGB(150,150,150)
+plusJump.BackgroundColor3 = Color3.fromRGB(112,112,112)
 plusJump.TextColor3 = Color3.new(0,0,0)
 plusJump.TextSize = 14
-plusJump.Parent = frame
+plusJump.Parent = main
 
--- FLY кнопка
+-- кнопки FLY и NOCLIP
 local flyBtn = Instance.new("TextButton")
 flyBtn.Name = "Flybttn"
-flyBtn.Size = UDim2.new(0, 80, 0, 30)
-flyBtn.Position = UDim2.new(0, 160, 0, 35)
+flyBtn.Size = UDim2.new(0, 55, 0, 25)
+flyBtn.Position = UDim2.new(0, 170, 0, 30)
 flyBtn.Text = "FLY"
-flyBtn.BackgroundColor3 = Color3.new(0,0,0)
+flyBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
 flyBtn.TextSize = 14
-flyBtn.Parent = frame
+flyBtn.Parent = main
 
--- NOCLIP кнопка
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Name = "noclip"
-noclipBtn.Size = UDim2.new(0, 80, 0, 30)
-noclipBtn.Position = UDim2.new(0, 160, 0, 70)
+noclipBtn.Size = UDim2.new(0, 55, 0, 25)
+noclipBtn.Position = UDim2.new(0, 170, 0, 65)
 noclipBtn.Text = "NOCLIP"
-noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
+noclipBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
-noclipBtn.Parent = frame
+noclipBtn.Parent = main
+
+-- drag (перетаскивание через заголовок)
+local dragEnabled = false
+local dragInput, dragStart, startPos
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragEnabled = true
+        dragStart = input.Position
+        startPos = main.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragEnabled = false
+            end
+        end)
+    end
+end)
+title.InputChanged:Connect(function(input)
+    if dragEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
 
 -- ========== ЛОГИКА ==========
 local function updateSpeed(v)
-    speedLabel.Text = "speed: " .. math.floor(v)
+    speedInfo.Text = "speed: " .. math.floor(v)
 end
 local function getSpeed()
     local c = player.Character
@@ -140,7 +157,7 @@ plusSpeed.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 minusSpeed.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
 local function updateJump(v)
-    jumpLabel.Text = "jp: " .. string.format("%.1f", v)
+    jpInfo.Text = "jp: " .. string.format("%.1f", v)
 end
 local function getJump()
     local c = player.Character
@@ -267,17 +284,13 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
-local function onCharacterAdded(character)
-    local hum = character:WaitForChild("Humanoid")
+local function onChar(char)
+    local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
     updateJump(hum.JumpPower)
     hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function() updateSpeed(hum.WalkSpeed) end)
     hum:GetPropertyChangedSignal("JumpPower"):Connect(function() updateJump(hum.JumpPower) end)
 end
-if player.Character then
-    onCharacterAdded(player.Character)
-else
-    player.CharacterAdded:Connect(onCharacterAdded)
-end
+if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Простой GUI загружен. Должен быть виден серый прямоугольник с кнопками.")
+print("haxxguiv1 с перетаскиванием и выровненными кнопками загружен.")
