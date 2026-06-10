@@ -1,4 +1,4 @@
--- haxxguiv1: добавлен FLING (отбрасывает игроков)
+-- haxxguiv1: FLING добавлен (увеличенное окно)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,18 +7,18 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- КОНТЕЙНЕР (основное окно + кнопка HUBS)
+-- КОНТЕЙНЕР (шире)
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 480, 0, 170)
-container.Position = UDim2.new(0.5, -240, 0.5, -85)
+container.Size = UDim2.new(0, 520, 0, 170)
+container.Position = UDim2.new(0.5, -260, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
 container.Parent = gui
 
--- ОСНОВНОЕ ОКНО
+-- ОСНОВНОЕ ОКНО (шире)
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 455, 0, 170)
+main.Size = UDim2.new(0, 495, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -136,7 +136,7 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ: ESP, AIM, FLING, INVIS ===
+-- === КНОПКИ: ESP, AIM, FLING, INVIS (увеличен отступ) ===
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 50, 0, 25)
 espBtn.Position = UDim2.new(0, 155, 0, 100)
@@ -185,7 +185,7 @@ hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
 hubsBtn.TextColor3 = Color3.new(1,1,1)
 hubsBtn.Parent = container
 
--- === ОКНО HUBS С ScrollingFrame ===
+-- === ОКНО HUBS ===
 local hubframe = Instance.new("Frame")
 hubframe.Size = UDim2.new(0, 180, 0, 170)
 hubframe.Position = UDim2.new(0, container.Position.X.Offset + container.Size.X.Offset + 10, 0, container.Position.Y.Offset)
@@ -748,4 +748,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: FLING добавлен (отбрасывает игроков в радиусе 30)")
+print("Haxxx Gui V1: FLING добавлен, окно расширено")
