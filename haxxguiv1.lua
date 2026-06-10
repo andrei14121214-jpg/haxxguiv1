@@ -1,4 +1,4 @@
--- haxxguiv1: FLING добавлен (увеличенное окно)
+-- haxxguiv1: FLING (без самоотбрасывания) + ANTI-FLING
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,18 +7,18 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- КОНТЕЙНЕР (шире)
+-- КОНТЕЙНЕР
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 520, 0, 170)
-container.Position = UDim2.new(0.5, -260, 0.5, -85)
+container.Size = UDim2.new(0, 560, 0, 170)
+container.Position = UDim2.new(0.5, -280, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
 container.Parent = gui
 
--- ОСНОВНОЕ ОКНО (шире)
+-- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 495, 0, 170)
+main.Size = UDim2.new(0, 535, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -136,41 +136,50 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ: ESP, AIM, FLING, INVIS (увеличен отступ) ===
+-- === КНОПКИ (шире, чтобы текст влезал) ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 50, 0, 25)
+espBtn.Size = UDim2.new(0, 65, 0, 25)
 espBtn.Position = UDim2.new(0, 155, 0, 100)
 espBtn.Text = "ESP"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
-espBtn.TextSize = 12
+espBtn.TextSize = 11
 espBtn.Parent = main
 
 local aimBtn = Instance.new("TextButton")
-aimBtn.Size = UDim2.new(0, 50, 0, 25)
-aimBtn.Position = UDim2.new(0, 210, 0, 100)
+aimBtn.Size = UDim2.new(0, 65, 0, 25)
+aimBtn.Position = UDim2.new(0, 225, 0, 100)
 aimBtn.Text = "AIM"
 aimBtn.BackgroundColor3 = Color3.new(0,0,0)
 aimBtn.TextColor3 = Color3.new(1,1,1)
-aimBtn.TextSize = 12
+aimBtn.TextSize = 11
 aimBtn.Parent = main
 
 local flingBtn = Instance.new("TextButton")
-flingBtn.Size = UDim2.new(0, 50, 0, 25)
-flingBtn.Position = UDim2.new(0, 265, 0, 100)
+flingBtn.Size = UDim2.new(0, 65, 0, 25)
+flingBtn.Position = UDim2.new(0, 295, 0, 100)
 flingBtn.Text = "FLING"
 flingBtn.BackgroundColor3 = Color3.new(0,0,0)
 flingBtn.TextColor3 = Color3.new(1,1,1)
-flingBtn.TextSize = 12
+flingBtn.TextSize = 11
 flingBtn.Parent = main
 
+local antiFlingBtn = Instance.new("TextButton")
+antiFlingBtn.Size = UDim2.new(0, 65, 0, 25)
+antiFlingBtn.Position = UDim2.new(0, 365, 0, 100)
+antiFlingBtn.Text = "A-FLING"
+antiFlingBtn.BackgroundColor3 = Color3.new(0,0,0)
+antiFlingBtn.TextColor3 = Color3.new(1,1,1)
+antiFlingBtn.TextSize = 11
+antiFlingBtn.Parent = main
+
 local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 50, 0, 25)
-invisBtn.Position = UDim2.new(0, 320, 0, 100)
+invisBtn.Size = UDim2.new(0, 65, 0, 25)
+invisBtn.Position = UDim2.new(0, 435, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
-invisBtn.TextSize = 12
+invisBtn.TextSize = 11
 invisBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
@@ -615,7 +624,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === FLING ===
+-- === FLING (теперь не отбрасывает себя) ===
 local flingActive = false
 local flingConnection = nil
 local flingForce = 10000
@@ -683,7 +692,7 @@ end
 
 flingBtn.MouseButton1Click:Connect(function()
     flingActive = not flingActive
-    flingBtn.Text = flingActive and "FLING ON" or "FLING"
+    flingBtn.Text = flingActive and "ON" or "FLING"
     if flingActive then
         startFling()
     else
@@ -696,6 +705,64 @@ player.CharacterAdded:Connect(function()
         flingActive = false
         flingBtn.Text = "FLING"
         stopFling()
+    end
+end)
+
+-- === ANTI-FLING (защита от флинга других) ===
+local antiFlingActive = false
+local antiFlingConnection = nil
+
+local function protectFromFling()
+    if not antiFlingActive then return end
+    local char = player.Character
+    if not char then return end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        -- Удаляем BodyVelocity, которые пытаются нас отбросить
+        for _, bv in ipairs(hrp:GetChildren()) do
+            if bv:IsA("BodyVelocity") then
+                bv:Destroy()
+            end
+        end
+        -- Возвращаем нормальную скорость
+        local hum = char:FindFirstChild("Humanoid")
+        if hum and hum:GetState() == Enum.HumanoidStateType.Freefall then
+            hum:ChangeState(Enum.HumanoidStateType.Landed)
+        end
+    end
+end
+
+local function startAntiFling()
+    if antiFlingConnection then antiFlingConnection:Disconnect() end
+    antiFlingConnection = runService.Heartbeat:Connect(function()
+        if antiFlingActive then
+            protectFromFling()
+        end
+    end)
+end
+
+local function stopAntiFling()
+    if antiFlingConnection then
+        antiFlingConnection:Disconnect()
+        antiFlingConnection = nil
+    end
+end
+
+antiFlingBtn.MouseButton1Click:Connect(function()
+    antiFlingActive = not antiFlingActive
+    antiFlingBtn.Text = antiFlingActive and "A-F ON" or "A-FLING"
+    if antiFlingActive then
+        startAntiFling()
+    else
+        stopAntiFling()
+    end
+end)
+
+player.CharacterAdded:Connect(function()
+    if antiFlingActive then
+        antiFlingActive = false
+        antiFlingBtn.Text = "A-FLING"
+        stopAntiFling()
     end
 end)
 
@@ -748,4 +815,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: FLING добавлен, окно расширено")
+print("Haxxx Gui V1: FLING (без самоотбрасывания) + ANTI-FLING добавлены")
