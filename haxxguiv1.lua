@@ -1,4 +1,4 @@
--- haxxguiv1 для MM2: ESP на шерифа и убийцу, прыжок +1/-1, исправлены отступы
+-- haxxguiv1 для MM2: ESP на убийцу (красный) и шерифа (синий), прыжок +1/-1, расширенные кнопки
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -8,8 +8,8 @@ gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 300, 0, 140)
-main.Position = UDim2.new(0.5, -150, 0.5, -70)
+main.Size = UDim2.new(0, 320, 0, 140)
+main.Position = UDim2.new(0.5, -160, 0.5, -70)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Active = true
@@ -28,7 +28,7 @@ title.Parent = main
 
 -- === Строка скорости ===
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0, 100, 0, 25)
+speedLabel.Size = UDim2.new(0, 110, 0, 25)
 speedLabel.Position = UDim2.new(0, 10, 0, 30)
 speedLabel.BackgroundColor3 = Color3.new(0,0,0)
 speedLabel.Text = "speed: 16"
@@ -38,7 +38,7 @@ speedLabel.Parent = main
 
 local speedMinus = Instance.new("TextButton")
 speedMinus.Size = UDim2.new(0, 25, 0, 25)
-speedMinus.Position = UDim2.new(0, 115, 0, 30)
+speedMinus.Position = UDim2.new(0, 125, 0, 30)
 speedMinus.Text = "-"
 speedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedMinus.TextColor3 = Color3.new(0,0,0)
@@ -47,7 +47,7 @@ speedMinus.Parent = main
 
 local speedPlus = Instance.new("TextButton")
 speedPlus.Size = UDim2.new(0, 25, 0, 25)
-speedPlus.Position = UDim2.new(0, 145, 0, 30)
+speedPlus.Position = UDim2.new(0, 155, 0, 30)
 speedPlus.Text = "+"
 speedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedPlus.TextColor3 = Color3.new(0,0,0)
@@ -56,7 +56,7 @@ speedPlus.Parent = main
 
 local flyBtn = Instance.new("TextButton")
 flyBtn.Size = UDim2.new(0, 55, 0, 25)
-flyBtn.Position = UDim2.new(0, 190, 0, 30)
+flyBtn.Position = UDim2.new(0, 200, 0, 30)
 flyBtn.Text = "FLY"
 flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
@@ -65,7 +65,7 @@ flyBtn.Parent = main
 
 -- === Строка прыжка ===
 local jpLabel = Instance.new("TextLabel")
-jpLabel.Size = UDim2.new(0, 100, 0, 25)
+jpLabel.Size = UDim2.new(0, 110, 0, 25)
 jpLabel.Position = UDim2.new(0, 10, 0, 65)
 jpLabel.BackgroundColor3 = Color3.new(0,0,0)
 jpLabel.Text = "jp: 7.2"
@@ -75,7 +75,7 @@ jpLabel.Parent = main
 
 local jumpMinus = Instance.new("TextButton")
 jumpMinus.Size = UDim2.new(0, 25, 0, 25)
-jumpMinus.Position = UDim2.new(0, 115, 0, 65)
+jumpMinus.Position = UDim2.new(0, 125, 0, 65)
 jumpMinus.Text = "-"
 jumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpMinus.TextColor3 = Color3.new(0,0,0)
@@ -84,7 +84,7 @@ jumpMinus.Parent = main
 
 local jumpPlus = Instance.new("TextButton")
 jumpPlus.Size = UDim2.new(0, 25, 0, 25)
-jumpPlus.Position = UDim2.new(0, 145, 0, 65)
+jumpPlus.Position = UDim2.new(0, 155, 0, 65)
 jumpPlus.Text = "+"
 jumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpPlus.TextColor3 = Color3.new(0,0,0)
@@ -92,8 +92,8 @@ jumpPlus.TextSize = 16
 jumpPlus.Parent = main
 
 local noclipBtn = Instance.new("TextButton")
-noclipBtn.Size = UDim2.new(0, 55, 0, 25)
-noclipBtn.Position = UDim2.new(0, 190, 0, 65)
+noclipBtn.Size = UDim2.new(0, 70, 0, 25)
+noclipBtn.Position = UDim2.new(0, 200, 0, 65)
 noclipBtn.Text = "NOCLIP"
 noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
@@ -110,7 +110,7 @@ espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- Drag (перетаскивание)
+-- Drag
 local dragEnabled = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -180,7 +180,7 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- FLY (без изменений)
+-- FLY
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -247,7 +247,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- NOCLIP (без изменений)
+-- NOCLIP
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -294,22 +294,21 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== ESP для MM2 (шериф и убийца) ==========
--- Функция определения роли в Murder Mystery 2
+-- ========== ESP для Murder Mystery 2 (убийца – красный, шериф – синий) ==========
 local function getRole(plr)
-    -- Пробуем разные пути получения роли
-    local role = nil
-    -- Вариант 1: через Data (часто используется)
+    -- Попытка получить роль через Data (наиболее часто)
     if plr:FindFirstChild("Data") and plr.Data:FindFirstChild("Role") then
-        role = plr.Data.Role.Value
-    -- Вариант 2: через PlayerGui (для клиента)
-    elseif plr:FindFirstChild("PlayerGui") then
-        local gui = plr.PlayerGui:FindFirstChild("MainGui")
-        if gui and gui:FindFirstChild("role") then
-            role = gui.role.Text
+        return plr.Data.Role.Value
+    end
+    -- Альтернативный путь через PlayerGui
+    local gui = plr:FindFirstChild("PlayerGui")
+    if gui then
+        local mainGui = gui:FindFirstChild("MainGui")
+        if mainGui and mainGui:FindFirstChild("Role") then
+            return mainGui.Role.Text
         end
     end
-    return role
+    return nil
 end
 
 local espActive = false
@@ -401,4 +400,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("MM2 GUI загружен: скорость +/-1, прыжок +/-1, ESP на убийцу (красный) и шерифа (синий).")
+print("MM2 GUI: скорость +/-1, прыжок +/-1, ESP на убийцу (красный) и шерифа (синий), кнопки исправлены.")
