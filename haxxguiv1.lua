@@ -1,4 +1,4 @@
--- haxxguiv1: вертикальная кнопка HUBS склеена слева, окно справа (перетаскивается отдельно)
+-- haxxguiv1: кнопка HUBS слева, окно справа с кнопкой Infinite Yield
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,25 +7,25 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- ФРЕЙМ-КОНТЕЙНЕР (для склейки main + кнопка HUBS)
+-- КОНТЕЙНЕР (основное окно + кнопка HUBS склеены)
 local container = Instance.new("Frame")
 container.Name = "Container"
-container.Size = UDim2.new(0, 345, 0, 170)  -- ширина = main(320) + кнопка(25)
+container.Size = UDim2.new(0, 345, 0, 170)
 container.Position = UDim2.new(0.5, -172.5, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
 container.Parent = gui
 
--- Основное окно main
+-- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
 main.Size = UDim2.new(0, 320, 0, 170)
-main.Position = UDim2.new(0, 0, 0, 0)
+main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Parent = container
 
--- Заголовок (для перетаскивания контейнера)
+-- Заголовок
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -119,10 +119,10 @@ espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS (приклеена слева внутри контейнера) ===
+-- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS (приклеена слева) ===
 local hubsBtn = Instance.new("TextButton")
 hubsBtn.Name = "HUBS"
-hubsBtn.Size = UDim2.new(0, 25, 0, 170)  -- ширина 25, высота как у main
+hubsBtn.Size = UDim2.new(0, 25, 0, 170)
 hubsBtn.Position = UDim2.new(0, 0, 0, 0)
 hubsBtn.Text = "HUBS"
 hubsBtn.TextSize = 12
@@ -130,10 +130,8 @@ hubsBtn.TextWrapped = true
 hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
 hubsBtn.TextColor3 = Color3.new(1,1,1)
 hubsBtn.Parent = container
--- Сдвигаем main правее, чтобы кнопка была слева
-main.Position = UDim2.new(0, 25, 0, 0)
 
--- === ФРЕЙМ hubframe (отдельный, справа, можно двигать) ===
+-- === ОКНО HUBS (справа, перетаскивается отдельно) ===
 local hubframe = Instance.new("Frame")
 hubframe.Name = "hubframe"
 hubframe.Size = UDim2.new(0, 150, 0, 170)
@@ -145,6 +143,7 @@ hubframe.Active = true
 hubframe.Draggable = true
 hubframe.Parent = gui
 
+-- Заголовок окна HUBS (для перетаскивания)
 local hubTitle = Instance.new("TextLabel")
 hubTitle.Size = UDim2.new(1, 0, 0, 20)
 hubTitle.Position = UDim2.new(0, 0, 0, 0)
@@ -154,17 +153,45 @@ hubTitle.TextColor3 = Color3.new(1,1,1)
 hubTitle.TextSize = 14
 hubTitle.Parent = hubframe
 
-local hubContent = Instance.new("TextLabel")
-hubContent.Size = UDim2.new(1, 0, 1, -20)
-hubContent.Position = UDim2.new(0, 0, 0, 20)
-hubContent.BackgroundTransparency = 1
-hubContent.Text = "Содержимое хабов\n(можно добавить ссылки)"
-hubContent.TextColor3 = Color3.new(1,1,1)
-hubContent.TextSize = 12
-hubContent.TextWrapped = true
-hubContent.Parent = hubframe
+-- === Новая ЧЁРНАЯ КНОПКА ДЛЯ INFINITE YIELD ===
+local iyBtn = Instance.new("TextButton")
+iyBtn.Size = UDim2.new(0, 130, 0, 30)
+iyBtn.Position = UDim2.new(0.5, -65, 0, 40)
+iyBtn.Text = "Infinity Yield"
+iyBtn.BackgroundColor3 = Color3.new(0,0,0)
+iyBtn.TextColor3 = Color3.new(1,1,1)
+iyBtn.TextSize = 14
+iyBtn.Parent = hubframe
 
--- Функция обновления позиции hubframe (чтобы он не уезжал далеко, но и не прилипал)
+-- Текст-описание
+local desc = Instance.new("TextLabel")
+desc.Size = UDim2.new(1, 0, 0, 40)
+desc.Position = UDim2.new(0, 0, 0, 80)
+desc.BackgroundTransparency = 1
+desc.Text = "Запускает Infinite Yield\n(потребуется инжектор)"
+desc.TextColor3 = Color3.new(1,1,1)
+desc.TextSize = 11
+desc.TextWrapped = true
+desc.Parent = hubframe
+
+-- Функция запуска Infinite Yield
+local function runInfinityYeld()
+    -- Использую официальный сырой URL, который работает
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+    end)
+    if not success then
+        warn("Ошибка загрузки Infinity Yield: " .. tostring(err))
+        -- Альтернативный URL (резервный)
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        end)
+    end
+end
+
+iyBtn.MouseButton1Click:Connect(runInfinityYeld)
+
+-- Функция обновления позиции hubframe
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -172,7 +199,7 @@ local function updateHubframePosition()
     hubframe.Position = UDim2.new(0, contPos.X + contSize.X + 10, 0, contPos.Y)
 end
 
--- Привязываем обновление позиции к перетаскиванию контейнера
+-- Перетаскивание контейнера + синхронизация позиции hubframe
 local dragContainer = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -196,10 +223,7 @@ title.InputChanged:Connect(function(input)
     end
 end)
 
--- Обновляем позицию при первом появлении
-updateHubframePosition()
-
--- Логика показа/скрытия hubframe
+-- Показать/скрыть окно по кнопке HUBS
 local hubsOpen = false
 hubsBtn.MouseButton1Click:Connect(function()
     hubsOpen = not hubsOpen
@@ -208,7 +232,7 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
--- ========== ЛОГИКА СКОРОСТИ ==========
+-- ========== ЛОГИКА (speed, jump, fly, noclip, esp) ==========
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed()
     local c = player.Character
@@ -230,7 +254,6 @@ end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- ========== ПРЫЖОК (шаг +1/-1) ==========
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
 local function getJump()
     local c = player.Character
@@ -253,7 +276,7 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- ========== FLY ==========
+-- FLY
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -320,7 +343,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== NOCLIP ==========
+-- NOCLIP
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -360,7 +383,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== ESP (упрощённый) ==========
+-- ESP
 local espActive = false
 local espHighlights = {}
 local espConn = nil
@@ -422,4 +445,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка HUBS приклеена слева, окно справа можно двигать отдельно.")
+print("Haxxx Gui V1: добавлена кнопка Infinity Yield в окне HUBS.")
