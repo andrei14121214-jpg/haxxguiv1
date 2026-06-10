@@ -1,4 +1,6 @@
--- haxxguiv1: HUBS с ScrollingFrame + System Broken (встроенный)
+-- Замени ВЕСЬ старый скрипт на этот (полностью обновлённый)
+
+-- haxxguiv1: HUBS с ScrollingFrame + System Broken (loadstring)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -223,33 +225,9 @@ local function addHubButton(text, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- === ВСТРОЕННЫЙ System Broken (полностью рабочий) ===
+-- === System Broken (ТВОЙ loadstring) ===
 addHubButton("System Broken", function()
-    -- System Broken by H20Calibre
-    local player = game.Players.LocalPlayer
-    local char = player.Character or player.CharacterAdded:Wait()
-    for _, v in pairs(char:GetDescendants()) do
-        if v:IsA("BasePart") then
-            v.Material = Enum.Material.Neon
-            v.Color = Color3.fromRGB(255, 0, 0)
-            local att = Instance.new("Attachment")
-            att.Parent = v
-            local smoke = Instance.new("Smoke")
-            smoke.Color = Color3.fromRGB(255, 0, 0)
-            smoke.Opacity = 0.5
-            smoke.RiseVelocity = 10
-            smoke.Enabled = true
-            smoke.Parent = att
-            local fire = Instance.new("Fire")
-            fire.Size = 5
-            fire.Heat = 10
-            fire.Color = Color3.fromRGB(255, 0, 0)
-            fire.SecondaryColor = Color3.fromRGB(100, 0, 0)
-            fire.Enabled = true
-            fire.Parent = att
-        end
-    end
-    print("System Broken activated")
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script"))()
 end)
 
 addHubButton("Infinite Yield", function()
@@ -689,4 +667,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: HUBS с ScrollingFrame и System Broken (встроенный) загружены")
+print("Haxxx Gui V1: HUBS с ScrollingFrame и System Broken (твой loadstring) загружены")
