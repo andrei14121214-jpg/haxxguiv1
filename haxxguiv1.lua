@@ -1,4 +1,4 @@
--- haxxguiv1: ИСПРАВЛЕННЫЙ MORPH (R6 + аксессуары/одежда)
+-- haxxguiv1: кнопка KNIFE (выдаёт нож, можно бить)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -108,7 +108,7 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- === КНОПКИ ESP, INVIS, MORPH ===
+-- === КНОПКИ ESP, INVIS, KNIFE ===
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 55, 0, 25)
 espBtn.Position = UDim2.new(0, 10, 0, 100)
@@ -127,14 +127,14 @@ invisBtn.TextColor3 = Color3.new(1,1,1)
 invisBtn.TextSize = 11
 invisBtn.Parent = main
 
-local morphBtn = Instance.new("TextButton")
-morphBtn.Size = UDim2.new(0, 55, 0, 25)
-morphBtn.Position = UDim2.new(0, 130, 0, 100)
-morphBtn.Text = "MORPH"
-morphBtn.BackgroundColor3 = Color3.new(0,0,0)
-morphBtn.TextColor3 = Color3.new(1,1,1)
-morphBtn.TextSize = 11
-morphBtn.Parent = main
+local knifeBtn = Instance.new("TextButton")
+knifeBtn.Size = UDim2.new(0, 55, 0, 25)
+knifeBtn.Position = UDim2.new(0, 130, 0, 100)
+knifeBtn.Text = "KNIFE"
+knifeBtn.BackgroundColor3 = Color3.new(0,0,0)
+knifeBtn.TextColor3 = Color3.new(1,1,1)
+knifeBtn.TextSize = 11
+knifeBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
 local hubsBtn = Instance.new("TextButton")
@@ -238,122 +238,130 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- === ФУНКЦИЯ MORPH (РАБОЧАЯ) ===
-local morphed = false
-local addedItems = {}
-local morphIds = {
-    "80220105414674",
-    "75925258547267",
-    "118391977411765"
-}
-
--- Функция загрузки предмета (универсальная)
-local function loadItem(id, character)
-    local success, result = pcall(function()
-        return game:GetService("MarketplaceService"):LoadAsset(id)
-    end)
-    if success and result then
-        local item = nil
-        -- Ищем среди потомков Accessory, Shirt, Pants
-        for _, child in ipairs(result:GetChildren()) do
-            if child:IsA("Accessory") or child:IsA("Shirt") or child:IsA("Pants") then
-                item = child
-                break
-            end
-        end
-        if item then
-            if item:IsA("Accessory") then
-                -- Аксессуар: прикрепляем к персонажу
-                item.Parent = character
-                local humanoid = character:FindFirstChild("Humanoid")
-                if humanoid then
-                    humanoid:AddAccessory(item)
-                end
-                table.insert(addedItems, item)
-            elseif item:IsA("Shirt") or item:IsA("Pants") then
-                -- Одежда: клонируем в Clothing
-                local clone = item:Clone()
-                clone.Parent = character
-                table.insert(addedItems, clone)
-            end
-        end
-        -- Удаляем временный контейнер
-        result:Destroy()
-    end
-end
-
-local function applyMorph()
-    if morphed then return end
-    
-    local char = player.Character
-    if not char then
-        warn("Персонаж не найден")
-        return
+-- === НОЖ (Tool) ===
+local knife = nil
+local function giveKnife()
+    -- Удаляем старый нож, если есть
+    if knife and knife.Parent then
+        knife:Destroy()
     end
     
-    -- 1. Меняем RigType на R6 (стандартный способ)
-    local humanoid = char:FindFirstChild("Humanoid")
-    if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R6 then
-        humanoid.RigType = Enum.HumanoidRigType.R6
-        -- Небольшая задержка для применения
-        task.wait(0.2)
-    end
+    -- Создаём Tool (нож)
+    knife = Instance.new("Tool")
+    knife.Name = "Knife"
+    knife.RequiresHandle = true
+    knife.CanBeDropped = false
+    knife.Parent = player.Backpack  -- или player.Character, но лучше в Backpack
     
-    -- 2. Загружаем и применяем предметы
-    for _, id in ipairs(morphIds) do
-        loadItem(id, char)
-    end
+    -- Создаём Handle (видимая часть)
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(0.5, 0.1, 1.2)
+    handle.Shape = Enum.PartType.Block
+    handle.Material = Enum.Material.Metal
+    handle.Color = Color3.fromRGB(192, 192, 192)  -- серебристый
+    handle.BrickColor = BrickColor.new("Silver")
+    handle.Transparency = 0
+    handle.CanCollide = false
+    handle.Parent = knife
     
-    morphed = true
-    morphBtn.Text = "MORPHED"
-end
-
-local function resetMorph()
-    if not morphed then return end
+    -- Лезвие
+    local blade = Instance.new("Part")
+    blade.Name = "Blade"
+    blade.Size = Vector3.new(0.4, 0.05, 1.5)
+    blade.Position = Vector3.new(0, 0, 0.8)
+    blade.Material = Enum.Material.Metal
+    blade.Color = Color3.fromRGB(220, 220, 255)
+    blade.BrickColor = BrickColor.new("Light stone grey")
+    blade.Transparency = 0
+    blade.CanCollide = false
+    blade.Parent = handle  -- прикрепляем к Handle
     
-    local char = player.Character
-    if char then
-        -- Удаляем добавленные предметы
-        for _, item in ipairs(addedItems) do
-            if item and item.Parent then
-                item:Destroy()
-            end
-        end
-        addedItems = {}
+    -- Устанавливаем Handle как основную часть
+    knife.Handle = handle
+    
+    -- Добавляем анимацию удара (при нажатии левой кнопкой мыши)
+    local debounce = false
+    knife.Activated:Connect(function()
+        if debounce then return end
+        debounce = true
         
-        -- Возвращаем R15 (стандарт)
-        local humanoid = char:FindFirstChild("Humanoid")
-        if humanoid then
-            humanoid.RigType = Enum.HumanoidRigType.R15
+        -- Анимация удара (взмах)
+        local char = player.Character
+        if char and handle then
+            local originalCF = handle.CFrame
+            -- Взмах вправо
+            handle.CFrame = handle.CFrame * CFrame.Angles(0, 0, math.rad(-60))
+            task.wait(0.05)
+            handle.CFrame = originalCF
+            -- Небольшая задержка для эффекта
+            task.wait(0.1)
+            
+            -- Наносим урон (проверяем близость к другим игрокам)
+            for _, plr in ipairs(game.Players:GetPlayers()) do
+                if plr ~= player and plr.Character then
+                    local targetChar = plr.Character
+                    local hrp = targetChar:FindFirstChild("HumanoidRootPart")
+                    if hrp and (hrp.Position - handle.Position).Magnitude < 5 then
+                        local humanoid = targetChar:FindFirstChild("Humanoid")
+                        if humanoid then
+                            humanoid:TakeDamage(20)  -- урон 20 HP
+                            -- Эффект крови (частицы)
+                            local blood = Instance.new("ParticleEmitter")
+                            blood.Texture = "rbxassetid://123456789"  -- стандартная текстура, можно заменить
+                            blood.Rate = 50
+                            blood.Lifetime = NumberRange.new(0.5)
+                            blood.SpreadAngle = Vector2.new(360, 360)
+                            blood.VelocityInheritance = 0
+                            blood.Speed = NumberRange.new(2)
+                            blood.Parent = handle
+                            task.wait(0.2)
+                            blood:Destroy()
+                        end
+                    end
+                end
+            end
         end
+        
+        task.wait(0.3)
+        debounce = false
+    end)
+    
+    -- Если персонаж уже загружен, перемещаем нож в руку
+    if player.Character then
+        knife.Parent = player.Backpack  -- оставляем в рюкзаке, игрок сам достанет
+        -- можно принудительно положить в руку:
+        -- knife.Parent = player.Character
     end
     
-    morphed = false
-    morphBtn.Text = "MORPH"
+    knifeBtn.Text = "KNIFE OUT"
 end
 
-morphBtn.MouseButton1Click:Connect(function()
-    if not morphed then
-        applyMorph()
+local function removeKnife()
+    if knife then
+        knife:Destroy()
+        knife = nil
+    end
+    knifeBtn.Text = "KNIFE"
+end
+
+knifeBtn.MouseButton1Click:Connect(function()
+    if not knife or knife.Parent == nil then
+        giveKnife()
     else
-        resetMorph()
+        removeKnife()
     end
 end)
 
--- Сброс при респавне
-player.CharacterAdded:Connect(function(newChar)
-    if morphed then
-        resetMorph()
+-- Сброс при респавне (удаляем нож, если он был)
+player.CharacterAdded:Connect(function()
+    if knife then
+        removeKnife()
     end
     invisible = false
     invisBtn.Text = "INVIS"
     originalMaterials = {}
     originalTransparencies = {}
-    
-    -- Небольшая задержка, чтобы персонаж полностью загрузился
-    task.wait(1)
-    -- Если нужно автоматически применить морф после респавна - раскомментируй следующую строку
-    -- applyMorph()
 end)
 
 -- ========== ЛОГИКА (speed, jump, fly, noclip, esp) ==========
@@ -608,4 +616,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: MORPH исправлен (универсальная загрузка).")
+print("Haxxx Gui V1: кнопка KNIFE (нож с анимацией удара и уроном 20 HP)")
