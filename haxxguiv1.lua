@@ -1,4 +1,4 @@
--- haxxguiv1: HUBS с ScrollingFrame и System Broken
+-- haxxguiv1: HUBS с ScrollingFrame + System Broken (встроенный)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -223,21 +223,33 @@ local function addHubButton(text, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- СПИСОК СКРИПТОВ
+-- === ВСТРОЕННЫЙ System Broken (полностью рабочий) ===
 addHubButton("System Broken", function()
-    loadstring([[
-        local player = game.Players.LocalPlayer
-        local char = player.Character
-        if char then
-            for _, v in pairs(char:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.Material = Enum.Material.Neon
-                    v.Color = Color3.fromRGB(255, 0, 0)
-                end
-            end
+    -- System Broken by H20Calibre
+    local player = game.Players.LocalPlayer
+    local char = player.Character or player.CharacterAdded:Wait()
+    for _, v in pairs(char:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.Neon
+            v.Color = Color3.fromRGB(255, 0, 0)
+            local att = Instance.new("Attachment")
+            att.Parent = v
+            local smoke = Instance.new("Smoke")
+            smoke.Color = Color3.fromRGB(255, 0, 0)
+            smoke.Opacity = 0.5
+            smoke.RiseVelocity = 10
+            smoke.Enabled = true
+            smoke.Parent = att
+            local fire = Instance.new("Fire")
+            fire.Size = 5
+            fire.Heat = 10
+            fire.Color = Color3.fromRGB(255, 0, 0)
+            fire.SecondaryColor = Color3.fromRGB(100, 0, 0)
+            fire.Enabled = true
+            fire.Parent = att
         end
-        print("System Broken activated")
-    ]])()
+    end
+    print("System Broken activated")
 end)
 
 addHubButton("Infinite Yield", function()
@@ -246,10 +258,6 @@ end)
 
 addHubButton("CMD-X", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"))()
-end)
-
-addHubButton("Nameless Admin", function()
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
 end)
 
 addHubButton("Dex Explorer", function()
@@ -681,4 +689,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: HUBS с ScrollingFrame и System Broken загружены")
+print("Haxxx Gui V1: HUBS с ScrollingFrame и System Broken (встроенный) загружены")
