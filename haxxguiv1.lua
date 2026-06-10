@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка‑тоггл (☰) открывает/закрывает меню
+-- haxxguiv1: кнопка-тоггл "H v1" (перетаскивается), ровные столбцы кнопок
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,37 +7,74 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- ===== ПЛАВАЮЩАЯ КНОПКА-ТОГГЛ =====
+-- ===== ПЛАВАЮЩАЯ КНОПКА-ТОГГЛ "H v1" (ПЕРЕТАСКИВАЕТСЯ) =====
+local toggleHolder = Instance.new("Frame")
+toggleHolder.Name = "ToggleHolder"
+toggleHolder.Size = UDim2.new(0, 50, 0, 50)
+toggleHolder.Position = UDim2.new(1, -60, 0, 10)
+toggleHolder.BackgroundTransparency = 1
+toggleHolder.Parent = gui
+
 local toggleBtn = Instance.new("TextButton")
-toggleBtn.Name = "ToggleMenu"
-toggleBtn.Size = UDim2.new(0, 40, 0, 40)
-toggleBtn.Position = UDim2.new(1, -50, 0, 10)
-toggleBtn.Text = "☰"
-toggleBtn.TextSize = 24
+toggleBtn.Size = UDim2.new(1, 0, 1, 0)
+toggleBtn.Text = "H"
+toggleBtn.TextSize = 28
 toggleBtn.TextColor3 = Color3.new(1,1,1)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 toggleBtn.BackgroundTransparency = 0.3
 toggleBtn.BorderSizePixel = 0
-toggleBtn.Parent = gui
+toggleBtn.Parent = toggleHolder
 
--- ===== ОСНОВНОЙ КОНТЕЙНЕР =====
+local v1Label = Instance.new("TextLabel")
+v1Label.Size = UDim2.new(1, 0, 0.3, 0)
+v1Label.Position = UDim2.new(0, 0, 0.7, 0)
+v1Label.BackgroundTransparency = 1
+v1Label.Text = "v1"
+v1Label.TextSize = 10
+v1Label.TextColor3 = Color3.new(1,1,1)
+v1Label.TextXAlignment = Enum.TextXAlignment.Right
+v1Label.Parent = toggleBtn
+
+-- Перетаскивание кнопки H v1
+local dragToggle = false
+local dragToggleStart, dragTogglePos
+toggleBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragToggle = true
+        dragToggleStart = input.Position
+        dragTogglePos = toggleHolder.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragToggle = false
+            end
+        end)
+    end
+end)
+toggleBtn.InputChanged:Connect(function(input)
+    if dragToggle and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragToggleStart
+        toggleHolder.Position = UDim2.new(dragTogglePos.X.Scale, dragTogglePos.X.Offset + delta.X,
+                                          dragTogglePos.Y.Scale, dragTogglePos.Y.Offset + delta.Y)
+    end
+end)
+
+-- ===== ОСНОВНОЙ КОНТЕЙНЕР (меню) =====
 local container = Instance.new("Frame")
 container.Name = "Container"
-container.Size = UDim2.new(0, 620, 0, 170)
-container.Position = UDim2.new(0.5, -310, 0.5, -85)
+container.Size = UDim2.new(0, 650, 0, 220)
+container.Position = UDim2.new(0.5, -325, 0.5, -110)
 container.BackgroundTransparency = 1
 container.Visible = true
 container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 595, 0, 170)
-main.Position = UDim2.new(0, 25, 0, 0)
+main.Size = UDim2.new(1, 0, 1, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Parent = container
 
--- Заголовок
+-- Заголовок (для перетаскивания всего окна)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -47,169 +84,196 @@ title.TextColor3 = Color3.new(1,1,1)
 title.TextSize = 14
 title.Parent = main
 
+-- ===== ЛЕВАЯ КОЛОНКА (speed, jump, fov) =====
+local leftColumn = Instance.new("Frame")
+leftColumn.Size = UDim2.new(0, 200, 1, 0)
+leftColumn.Position = UDim2.new(0, 10, 0, 20)
+leftColumn.BackgroundTransparency = 1
+leftColumn.Parent = main
+
+local leftLayout = Instance.new("UIListLayout")
+leftLayout.Padding = UDim.new(0, 10)
+leftLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+leftLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+leftLayout.Parent = leftColumn
+
 -- speed
+local speedFrame = Instance.new("Frame")
+speedFrame.Size = UDim2.new(1, 0, 0, 30)
+speedFrame.BackgroundTransparency = 1
+speedFrame.Parent = leftColumn
+
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0, 70, 0, 25)
-speedLabel.Position = UDim2.new(0, 10, 0, 30)
+speedLabel.Size = UDim2.new(0, 70, 1, 0)
 speedLabel.BackgroundColor3 = Color3.new(0,0,0)
 speedLabel.Text = "speed: 16"
 speedLabel.TextColor3 = Color3.new(1,1,1)
 speedLabel.TextSize = 12
-speedLabel.Parent = main
+speedLabel.Parent = speedFrame
 
 local speedMinus = Instance.new("TextButton")
-speedMinus.Size = UDim2.new(0, 25, 0, 25)
-speedMinus.Position = UDim2.new(0, 85, 0, 30)
+speedMinus.Size = UDim2.new(0, 25, 1, 0)
+speedMinus.Position = UDim2.new(0, 75, 0, 0)
 speedMinus.Text = "-"
 speedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedMinus.TextColor3 = Color3.new(0,0,0)
 speedMinus.TextSize = 16
-speedMinus.Parent = main
+speedMinus.Parent = speedFrame
 
 local speedPlus = Instance.new("TextButton")
-speedPlus.Size = UDim2.new(0, 25, 0, 25)
-speedPlus.Position = UDim2.new(0, 115, 0, 30)
+speedPlus.Size = UDim2.new(0, 25, 1, 0)
+speedPlus.Position = UDim2.new(0, 105, 0, 0)
 speedPlus.Text = "+"
 speedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedPlus.TextColor3 = Color3.new(0,0,0)
 speedPlus.TextSize = 16
-speedPlus.Parent = main
-
-local flyBtn = Instance.new("TextButton")
-flyBtn.Size = UDim2.new(0, 50, 0, 25)
-flyBtn.Position = UDim2.new(0, 155, 0, 30)
-flyBtn.Text = "FLY"
-flyBtn.BackgroundColor3 = Color3.new(0,0,0)
-flyBtn.TextColor3 = Color3.new(1,1,1)
-flyBtn.TextSize = 12
-flyBtn.Parent = main
+speedPlus.Parent = speedFrame
 
 -- jump
+local jumpFrame = Instance.new("Frame")
+jumpFrame.Size = UDim2.new(1, 0, 0, 30)
+jumpFrame.BackgroundTransparency = 1
+jumpFrame.Parent = leftColumn
+
 local jpLabel = Instance.new("TextLabel")
-jpLabel.Size = UDim2.new(0, 70, 0, 25)
-jpLabel.Position = UDim2.new(0, 10, 0, 65)
+jpLabel.Size = UDim2.new(0, 70, 1, 0)
 jpLabel.BackgroundColor3 = Color3.new(0,0,0)
 jpLabel.Text = "jp: 7.2"
 jpLabel.TextColor3 = Color3.new(1,1,1)
 jpLabel.TextSize = 12
-jpLabel.Parent = main
+jpLabel.Parent = jumpFrame
 
 local jumpMinus = Instance.new("TextButton")
-jumpMinus.Size = UDim2.new(0, 25, 0, 25)
-jumpMinus.Position = UDim2.new(0, 85, 0, 65)
+jumpMinus.Size = UDim2.new(0, 25, 1, 0)
+jumpMinus.Position = UDim2.new(0, 75, 0, 0)
 jumpMinus.Text = "-"
 jumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpMinus.TextColor3 = Color3.new(0,0,0)
 jumpMinus.TextSize = 16
-jumpMinus.Parent = main
+jumpMinus.Parent = jumpFrame
 
 local jumpPlus = Instance.new("TextButton")
-jumpPlus.Size = UDim2.new(0, 25, 0, 25)
-jumpPlus.Position = UDim2.new(0, 115, 0, 65)
+jumpPlus.Size = UDim2.new(0, 25, 1, 0)
+jumpPlus.Position = UDim2.new(0, 105, 0, 0)
 jumpPlus.Text = "+"
 jumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpPlus.TextColor3 = Color3.new(0,0,0)
 jumpPlus.TextSize = 16
-jumpPlus.Parent = main
-
-local noclipBtn = Instance.new("TextButton")
-noclipBtn.Size = UDim2.new(0, 60, 0, 25)
-noclipBtn.Position = UDim2.new(0, 155, 0, 65)
-noclipBtn.Text = "NOCLIP"
-noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
-noclipBtn.TextColor3 = Color3.new(1,1,1)
-noclipBtn.TextSize = 12
-noclipBtn.Parent = main
+jumpPlus.Parent = jumpFrame
 
 -- fov
+local fovFrame = Instance.new("Frame")
+fovFrame.Size = UDim2.new(1, 0, 0, 30)
+fovFrame.BackgroundTransparency = 1
+fovFrame.Parent = leftColumn
+
 local fovLabel = Instance.new("TextLabel")
-fovLabel.Size = UDim2.new(0, 70, 0, 25)
-fovLabel.Position = UDim2.new(0, 10, 0, 100)
+fovLabel.Size = UDim2.new(0, 70, 1, 0)
 fovLabel.BackgroundColor3 = Color3.new(0,0,0)
 fovLabel.Text = "fov: 70"
 fovLabel.TextColor3 = Color3.new(1,1,1)
 fovLabel.TextSize = 12
-fovLabel.Parent = main
+fovLabel.Parent = fovFrame
 
 local fovMinus = Instance.new("TextButton")
-fovMinus.Size = UDim2.new(0, 25, 0, 25)
-fovMinus.Position = UDim2.new(0, 85, 0, 100)
+fovMinus.Size = UDim2.new(0, 25, 1, 0)
+fovMinus.Position = UDim2.new(0, 75, 0, 0)
 fovMinus.Text = "-"
 fovMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 fovMinus.TextColor3 = Color3.new(0,0,0)
 fovMinus.TextSize = 16
-fovMinus.Parent = main
+fovMinus.Parent = fovFrame
 
 local fovPlus = Instance.new("TextButton")
-fovPlus.Size = UDim2.new(0, 25, 0, 25)
-fovPlus.Position = UDim2.new(0, 115, 0, 100)
+fovPlus.Size = UDim2.new(0, 25, 1, 0)
+fovPlus.Position = UDim2.new(0, 105, 0, 0)
 fovPlus.Text = "+"
 fovPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
-fovPlus.Parent = main
+fovPlus.Parent = fovFrame
 
--- КНОПКИ
+-- ===== ПРАВАЯ КОЛОНКА (кнопки-переключатели) =====
+local rightColumn = Instance.new("Frame")
+rightColumn.Size = UDim2.new(0, 400, 1, 0)
+rightColumn.Position = UDim2.new(0, 220, 0, 20)
+rightColumn.BackgroundTransparency = 1
+rightColumn.Parent = main
+
+local gridLayout = Instance.new("UIGridLayout")
+gridLayout.CellSize = UDim2.new(0, 90, 0, 30)
+gridLayout.CellPadding = UDim2.new(0, 5, 0, 8)
+gridLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+gridLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+gridLayout.Parent = rightColumn
+
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 60, 0, 25)
-espBtn.Position = UDim2.new(0, 155, 0, 100)
+espBtn.Size = UDim2.new(1, 0, 1, 0)
 espBtn.Text = "ESP"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
-espBtn.TextSize = 11
-espBtn.Parent = main
+espBtn.TextSize = 12
+espBtn.Parent = rightColumn
 
 local aimBtn = Instance.new("TextButton")
-aimBtn.Size = UDim2.new(0, 60, 0, 25)
-aimBtn.Position = UDim2.new(0, 220, 0, 100)
+aimBtn.Size = UDim2.new(1, 0, 1, 0)
 aimBtn.Text = "AIM"
 aimBtn.BackgroundColor3 = Color3.new(0,0,0)
 aimBtn.TextColor3 = Color3.new(1,1,1)
-aimBtn.TextSize = 11
-aimBtn.Parent = main
+aimBtn.TextSize = 12
+aimBtn.Parent = rightColumn
+
+local flyBtn = Instance.new("TextButton")
+flyBtn.Size = UDim2.new(1, 0, 1, 0)
+flyBtn.Text = "FLY"
+flyBtn.BackgroundColor3 = Color3.new(0,0,0)
+flyBtn.TextColor3 = Color3.new(1,1,1)
+flyBtn.TextSize = 12
+flyBtn.Parent = rightColumn
+
+local noclipBtn = Instance.new("TextButton")
+noclipBtn.Size = UDim2.new(1, 0, 1, 0)
+noclipBtn.Text = "NOCLIP"
+noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
+noclipBtn.TextColor3 = Color3.new(1,1,1)
+noclipBtn.TextSize = 12
+noclipBtn.Parent = rightColumn
 
 local antiLagBtn = Instance.new("TextButton")
-antiLagBtn.Size = UDim2.new(0, 65, 0, 25)
-antiLagBtn.Position = UDim2.new(0, 285, 0, 100)
+antiLagBtn.Size = UDim2.new(1, 0, 1, 0)
 antiLagBtn.Text = "A-LAG"
 antiLagBtn.BackgroundColor3 = Color3.new(0,0,0)
 antiLagBtn.TextColor3 = Color3.new(1,1,1)
-antiLagBtn.TextSize = 11
-antiLagBtn.Parent = main
+antiLagBtn.TextSize = 12
+antiLagBtn.Parent = rightColumn
 
 local antiAfkBtn = Instance.new("TextButton")
-antiAfkBtn.Size = UDim2.new(0, 65, 0, 25)
-antiAfkBtn.Position = UDim2.new(0, 355, 0, 100)
+antiAfkBtn.Size = UDim2.new(1, 0, 1, 0)
 antiAfkBtn.Text = "A-AFK"
 antiAfkBtn.BackgroundColor3 = Color3.new(0,0,0)
 antiAfkBtn.TextColor3 = Color3.new(1,1,1)
-antiAfkBtn.TextSize = 11
-antiAfkBtn.Parent = main
+antiAfkBtn.TextSize = 12
+antiAfkBtn.Parent = rightColumn
 
 local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 65, 0, 25)
-invisBtn.Position = UDim2.new(0, 425, 0, 100)
+invisBtn.Size = UDim2.new(1, 0, 1, 0)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
-invisBtn.TextSize = 11
-invisBtn.Parent = main
+invisBtn.TextSize = 12
+invisBtn.Parent = rightColumn
 
--- HUBS (вертикальная кнопка)
 local hubsBtn = Instance.new("TextButton")
-hubsBtn.Name = "HUBS"
-hubsBtn.Size = UDim2.new(0, 25, 0, 170)
-hubsBtn.Position = UDim2.new(0, 0, 0, 0)
+hubsBtn.Size = UDim2.new(1, 0, 1, 0)
 hubsBtn.Text = "HUBS"
-hubsBtn.TextSize = 12
-hubsBtn.TextWrapped = true
 hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
 hubsBtn.TextColor3 = Color3.new(1,1,1)
-hubsBtn.Parent = container
+hubsBtn.TextSize = 12
+hubsBtn.Parent = rightColumn
 
--- hubframe (окно HUBS)
+-- ===== ОКНО HUBS (справа, перетаскивается отдельно) =====
 local hubframe = Instance.new("Frame")
-hubframe.Size = UDim2.new(0, 180, 0, 170)
+hubframe.Size = UDim2.new(0, 200, 0, 220)
 hubframe.Position = UDim2.new(0, container.Position.X.Offset + container.Size.X.Offset + 10, 0, container.Position.Y.Offset)
 hubframe.BackgroundColor3 = Color3.fromRGB(40,40,40)
 hubframe.BackgroundTransparency = 0.2
@@ -297,7 +361,7 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 task.wait(0.1)
 updateCanvas()
 
--- ===== ФУНКЦИИ (SPEED, JUMP, FOV, FLY, NOCLIP, ESP, AIM, A-LAG, A-AFK, INVIS) =====
+-- ===== ЛОГИКА ФУНКЦИЙ (SPEED, JUMP, FOV, FLY, NOCLIP, ESP, AIM, A-LAG, A-AFK, INVIS) =====
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed() local c = player.Character if not c then return 16 end local h = c:FindFirstChild("Humanoid") return h and h.WalkSpeed or 16 end
 local function setSpeed(v) v = math.clamp(v, 0, 500) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.WalkSpeed = v updateSpeed(v) end end end
@@ -609,7 +673,7 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- ===== DRAG =====
+-- ===== DRAG ОСНОВНОГО ОКНА =====
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -617,35 +681,28 @@ local function updateHubframePosition()
     hubframe.Position = UDim2.new(0, contPos.X + contSize.X + 10, 0, contPos.Y)
 end
 
-local dragContainer = false
-local dragStart, startPos
+local dragMain = false
+local dragMainStart, dragMainPos
 title.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragContainer = true
-        dragStart = input.Position
-        startPos = container.Position
+        dragMain = true
+        dragMainStart = input.Position
+        dragMainPos = container.Position
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
-                dragContainer = false
+                dragMain = false
                 if hubframe.Visible then updateHubframePosition() end
             end
         end)
     end
 end)
 title.InputChanged:Connect(function(input)
-    if dragContainer and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        container.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    if dragMain and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragMainStart
+        container.Position = UDim2.new(dragMainPos.X.Scale, dragMainPos.X.Offset + delta.X,
+                                       dragMainPos.Y.Scale, dragMainPos.Y.Offset + delta.Y)
         if hubframe.Visible then updateHubframePosition() end
     end
-end)
-
-local hubsOpen = false
-hubsBtn.MouseButton1Click:Connect(function()
-    hubsOpen = not hubsOpen
-    hubframe.Visible = hubsOpen
-    hubsBtn.Text = hubsOpen and "←" or "HUBS"
-    if hubsOpen then updateHubframePosition() end
 end)
 
 -- ===== ТОГГЛ МЕНЮ =====
@@ -658,10 +715,18 @@ toggleBtn.MouseButton1Click:Connect(function()
         hubsOpen = false
         hubsBtn.Text = "HUBS"
     end
-    toggleBtn.Text = menuVisible and "☰" or "⋮"
 end)
 
--- Обновление дисплея
+-- ===== HUBS =====
+local hubsOpen = false
+hubsBtn.MouseButton1Click:Connect(function()
+    hubsOpen = not hubsOpen
+    hubframe.Visible = hubsOpen
+    hubsBtn.Text = hubsOpen and "←" or "HUBS"
+    if hubsOpen then updateHubframePosition() end
+end)
+
+-- Обновление дисплея при появлении персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -671,4 +736,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка‑тоггл работает, меню открывается/закрывается")
+print("Haxxx Gui V1: кнопка 'H v1' перетаскивается, все кнопки по столбцам")
