@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка KNIFE (выдаёт нож, можно бить)
+-- haxxguiv1: кнопка KNIFE (удалён MORPH), исправлены вылезания текста
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,8 +9,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР (основное окно + кнопка HUBS)
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 345, 0, 170)
-container.Position = UDim2.new(0.5, -172.5, 0.5, -85)
+container.Size = UDim2.new(0, 370, 0, 170)  -- шире на 25
+container.Position = UDim2.new(0.5, -185, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 320, 0, 170)
+main.Size = UDim2.new(0, 345, 0, 170)  -- шире
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -108,32 +108,32 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- === КНОПКИ ESP, INVIS, KNIFE ===
+-- === КНОПКИ ESP, INVIS, KNIFE (шире, чтобы текст влезал) ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 55, 0, 25)
+espBtn.Size = UDim2.new(0, 70, 0, 25)
 espBtn.Position = UDim2.new(0, 10, 0, 100)
 espBtn.Text = "ESP OFF"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
-espBtn.TextSize = 11
+espBtn.TextSize = 12
 espBtn.Parent = main
 
 local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 55, 0, 25)
-invisBtn.Position = UDim2.new(0, 70, 0, 100)
+invisBtn.Size = UDim2.new(0, 70, 0, 25)
+invisBtn.Position = UDim2.new(0, 90, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
-invisBtn.TextSize = 11
+invisBtn.TextSize = 12
 invisBtn.Parent = main
 
 local knifeBtn = Instance.new("TextButton")
-knifeBtn.Size = UDim2.new(0, 55, 0, 25)
-knifeBtn.Position = UDim2.new(0, 130, 0, 100)
+knifeBtn.Size = UDim2.new(0, 70, 0, 25)
+knifeBtn.Position = UDim2.new(0, 170, 0, 100)
 knifeBtn.Text = "KNIFE"
 knifeBtn.BackgroundColor3 = Color3.new(0,0,0)
 knifeBtn.TextColor3 = Color3.new(1,1,1)
-knifeBtn.TextSize = 11
+knifeBtn.TextSize = 12
 knifeBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
@@ -241,63 +241,49 @@ end)
 -- === НОЖ (Tool) ===
 local knife = nil
 local function giveKnife()
-    -- Удаляем старый нож, если есть
     if knife and knife.Parent then
         knife:Destroy()
     end
     
-    -- Создаём Tool (нож)
     knife = Instance.new("Tool")
     knife.Name = "Knife"
     knife.RequiresHandle = true
     knife.CanBeDropped = false
-    knife.Parent = player.Backpack  -- или player.Character, но лучше в Backpack
+    knife.Parent = player.Backpack
     
-    -- Создаём Handle (видимая часть)
     local handle = Instance.new("Part")
     handle.Name = "Handle"
     handle.Size = Vector3.new(0.5, 0.1, 1.2)
     handle.Shape = Enum.PartType.Block
     handle.Material = Enum.Material.Metal
-    handle.Color = Color3.fromRGB(192, 192, 192)  -- серебристый
-    handle.BrickColor = BrickColor.new("Silver")
-    handle.Transparency = 0
+    handle.Color = Color3.fromRGB(192, 192, 192)
     handle.CanCollide = false
     handle.Parent = knife
     
-    -- Лезвие
     local blade = Instance.new("Part")
     blade.Name = "Blade"
     blade.Size = Vector3.new(0.4, 0.05, 1.5)
     blade.Position = Vector3.new(0, 0, 0.8)
     blade.Material = Enum.Material.Metal
     blade.Color = Color3.fromRGB(220, 220, 255)
-    blade.BrickColor = BrickColor.new("Light stone grey")
-    blade.Transparency = 0
     blade.CanCollide = false
-    blade.Parent = handle  -- прикрепляем к Handle
+    blade.Parent = handle
     
-    -- Устанавливаем Handle как основную часть
     knife.Handle = handle
     
-    -- Добавляем анимацию удара (при нажатии левой кнопкой мыши)
     local debounce = false
     knife.Activated:Connect(function()
         if debounce then return end
         debounce = true
         
-        -- Анимация удара (взмах)
         local char = player.Character
         if char and handle then
             local originalCF = handle.CFrame
-            -- Взмах вправо
             handle.CFrame = handle.CFrame * CFrame.Angles(0, 0, math.rad(-60))
             task.wait(0.05)
             handle.CFrame = originalCF
-            -- Небольшая задержка для эффекта
             task.wait(0.1)
             
-            -- Наносим урон (проверяем близость к другим игрокам)
             for _, plr in ipairs(game.Players:GetPlayers()) do
                 if plr ~= player and plr.Character then
                     local targetChar = plr.Character
@@ -305,14 +291,11 @@ local function giveKnife()
                     if hrp and (hrp.Position - handle.Position).Magnitude < 5 then
                         local humanoid = targetChar:FindFirstChild("Humanoid")
                         if humanoid then
-                            humanoid:TakeDamage(20)  -- урон 20 HP
-                            -- Эффект крови (частицы)
+                            humanoid:TakeDamage(20)
                             local blood = Instance.new("ParticleEmitter")
-                            blood.Texture = "rbxassetid://123456789"  -- стандартная текстура, можно заменить
                             blood.Rate = 50
                             blood.Lifetime = NumberRange.new(0.5)
                             blood.SpreadAngle = Vector2.new(360, 360)
-                            blood.VelocityInheritance = 0
                             blood.Speed = NumberRange.new(2)
                             blood.Parent = handle
                             task.wait(0.2)
@@ -326,13 +309,6 @@ local function giveKnife()
         task.wait(0.3)
         debounce = false
     end)
-    
-    -- Если персонаж уже загружен, перемещаем нож в руку
-    if player.Character then
-        knife.Parent = player.Backpack  -- оставляем в рюкзаке, игрок сам достанет
-        -- можно принудительно положить в руку:
-        -- knife.Parent = player.Character
-    end
     
     knifeBtn.Text = "KNIFE OUT"
 end
@@ -353,7 +329,6 @@ knifeBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- Сброс при респавне (удаляем нож, если он был)
 player.CharacterAdded:Connect(function()
     if knife then
         removeKnife()
@@ -616,4 +591,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка KNIFE (нож с анимацией удара и уроном 20 HP)")
+print("Haxxx Gui V1: кнопка MORPH удалена, добавлена KNIFE, текст не вылезает")
