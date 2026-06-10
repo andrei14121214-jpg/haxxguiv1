@@ -1,4 +1,4 @@
--- haxxguiv1: FLING (без самоотбрасывания) + ANTI-FLING
+-- haxxguiv1: KILL (ввод ника) вместо FLING
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -136,7 +136,7 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ (шире, чтобы текст влезал) ===
+-- === КНОПКИ (ESP, AIM, KILL, INVIS) ===
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 65, 0, 25)
 espBtn.Position = UDim2.new(0, 155, 0, 100)
@@ -155,27 +155,18 @@ aimBtn.TextColor3 = Color3.new(1,1,1)
 aimBtn.TextSize = 11
 aimBtn.Parent = main
 
-local flingBtn = Instance.new("TextButton")
-flingBtn.Size = UDim2.new(0, 65, 0, 25)
-flingBtn.Position = UDim2.new(0, 295, 0, 100)
-flingBtn.Text = "FLING"
-flingBtn.BackgroundColor3 = Color3.new(0,0,0)
-flingBtn.TextColor3 = Color3.new(1,1,1)
-flingBtn.TextSize = 11
-flingBtn.Parent = main
-
-local antiFlingBtn = Instance.new("TextButton")
-antiFlingBtn.Size = UDim2.new(0, 65, 0, 25)
-antiFlingBtn.Position = UDim2.new(0, 365, 0, 100)
-antiFlingBtn.Text = "A-FLING"
-antiFlingBtn.BackgroundColor3 = Color3.new(0,0,0)
-antiFlingBtn.TextColor3 = Color3.new(1,1,1)
-antiFlingBtn.TextSize = 11
-antiFlingBtn.Parent = main
+local killBtn = Instance.new("TextButton")
+killBtn.Size = UDim2.new(0, 65, 0, 25)
+killBtn.Position = UDim2.new(0, 295, 0, 100)
+killBtn.Text = "KILL"
+killBtn.BackgroundColor3 = Color3.new(0,0,0)
+killBtn.TextColor3 = Color3.new(1,1,1)
+killBtn.TextSize = 11
+killBtn.Parent = main
 
 local invisBtn = Instance.new("TextButton")
 invisBtn.Size = UDim2.new(0, 65, 0, 25)
-invisBtn.Position = UDim2.new(0, 435, 0, 100)
+invisBtn.Position = UDim2.new(0, 365, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
@@ -624,146 +615,83 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === FLING (теперь не отбрасывает себя) ===
-local flingActive = false
-local flingConnection = nil
-local flingForce = 10000
-
-local function getNearbyPlayers()
-    local nearby = {}
-    local char = player.Character
-    if not char then return nearby end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return nearby end
-    local myPos = hrp.Position
+-- === KILL (с вводом ника) ===
+local function killPlayer(targetName)
     for _, plr in ipairs(game.Players:GetPlayers()) do
-        if plr ~= player and plr.Character then
-            local targetHrp = plr.Character:FindFirstChild("HumanoidRootPart")
-            if targetHrp then
-                local dist = (targetHrp.Position - myPos).Magnitude
-                if dist < 30 then
-                    table.insert(nearby, plr)
-                end
+        if plr.Name:lower() == targetName:lower() or plr.DisplayName:lower() == targetName:lower() then
+            if plr.Character and plr.Character:FindFirstChild("Humanoid") then
+                plr.Character.Humanoid.Health = 0
+                return true
             end
         end
     end
-    return nearby
+    return false
 end
 
-local function flingPlayers()
-    if not flingActive then return end
-    local char = player.Character
-    if not char then return end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    local myPos = hrp.Position
-    for _, plr in ipairs(getNearbyPlayers()) do
-        local targetChar = plr.Character
-        if targetChar then
-            local targetHrp = targetChar:FindFirstChild("HumanoidRootPart")
-            if targetHrp then
-                local dir = (targetHrp.Position - myPos).unit
-                local vel = dir * flingForce
-                local bv = Instance.new("BodyVelocity")
-                bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
-                bv.Velocity = vel
-                bv.Parent = targetHrp
-                game:GetService("Debris"):AddItem(bv, 0.5)
+killBtn.MouseButton1Click:Connect(function()
+    local dialog = Instance.new("ScreenGui")
+    dialog.Name = "KillDialog"
+    dialog.Parent = player.PlayerGui
+    
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 300, 0, 120)
+    frame.Position = UDim2.new(0.5, -150, 0.5, -60)
+    frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    frame.BackgroundTransparency = 0.1
+    frame.BorderSizePixel = 0
+    frame.Parent = dialog
+    
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 30)
+    title.BackgroundColor3 = Color3.new(0,0,0)
+    title.Text = "Введите ник игрока"
+    title.TextColor3 = Color3.new(1,1,1)
+    title.TextSize = 14
+    title.Parent = frame
+    
+    local input = Instance.new("TextBox")
+    input.Size = UDim2.new(1, -20, 0, 30)
+    input.Position = UDim2.new(0, 10, 0, 35)
+    input.BackgroundColor3 = Color3.new(50,50,50)
+    input.TextColor3 = Color3.new(1,1,1)
+    input.Text = ""
+    input.PlaceholderText = "Ник игрока..."
+    input.TextSize = 14
+    input.Parent = frame
+    
+    local confirm = Instance.new("TextButton")
+    confirm.Size = UDim2.new(0, 80, 0, 30)
+    confirm.Position = UDim2.new(0.5, -90, 0, 75)
+    confirm.Text = "Убить"
+    confirm.BackgroundColor3 = Color3.fromRGB(150,0,0)
+    confirm.TextColor3 = Color3.new(1,1,1)
+    confirm.TextSize = 14
+    confirm.Parent = frame
+    
+    local cancel = Instance.new("TextButton")
+    cancel.Size = UDim2.new(0, 80, 0, 30)
+    cancel.Position = UDim2.new(0.5, 10, 0, 75)
+    cancel.Text = "Отмена"
+    cancel.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    cancel.TextColor3 = Color3.new(1,1,1)
+    cancel.TextSize = 14
+    cancel.Parent = frame
+    
+    confirm.MouseButton1Click:Connect(function()
+        local name = input.Text
+        if name ~= "" then
+            if killPlayer(name) then
+                print("[KILL] Убит игрок: " .. name)
+            else
+                print("[KILL] Игрок не найден: " .. name)
             end
         end
-    end
-end
-
-local function startFling()
-    if flingConnection then flingConnection:Disconnect() end
-    flingConnection = runService.Heartbeat:Connect(function()
-        if flingActive then
-            flingPlayers()
-        end
+        dialog:Destroy()
     end)
-end
-
-local function stopFling()
-    if flingConnection then
-        flingConnection:Disconnect()
-        flingConnection = nil
-    end
-end
-
-flingBtn.MouseButton1Click:Connect(function()
-    flingActive = not flingActive
-    flingBtn.Text = flingActive and "ON" or "FLING"
-    if flingActive then
-        startFling()
-    else
-        stopFling()
-    end
-end)
-
-player.CharacterAdded:Connect(function()
-    if flingActive then
-        flingActive = false
-        flingBtn.Text = "FLING"
-        stopFling()
-    end
-end)
-
--- === ANTI-FLING (защита от флинга других) ===
-local antiFlingActive = false
-local antiFlingConnection = nil
-
-local function protectFromFling()
-    if not antiFlingActive then return end
-    local char = player.Character
-    if not char then return end
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-    if hrp then
-        -- Удаляем BodyVelocity, которые пытаются нас отбросить
-        for _, bv in ipairs(hrp:GetChildren()) do
-            if bv:IsA("BodyVelocity") then
-                bv:Destroy()
-            end
-        end
-        -- Возвращаем нормальную скорость
-        local hum = char:FindFirstChild("Humanoid")
-        if hum and hum:GetState() == Enum.HumanoidStateType.Freefall then
-            hum:ChangeState(Enum.HumanoidStateType.Landed)
-        end
-    end
-end
-
-local function startAntiFling()
-    if antiFlingConnection then antiFlingConnection:Disconnect() end
-    antiFlingConnection = runService.Heartbeat:Connect(function()
-        if antiFlingActive then
-            protectFromFling()
-        end
+    
+    cancel.MouseButton1Click:Connect(function()
+        dialog:Destroy()
     end)
-end
-
-local function stopAntiFling()
-    if antiFlingConnection then
-        antiFlingConnection:Disconnect()
-        antiFlingConnection = nil
-    end
-end
-
-antiFlingBtn.MouseButton1Click:Connect(function()
-    antiFlingActive = not antiFlingActive
-    antiFlingBtn.Text = antiFlingActive and "A-F ON" or "A-FLING"
-    if antiFlingActive then
-        startAntiFling()
-    else
-        stopAntiFling()
-    end
-end)
-
-player.CharacterAdded:Connect(function()
-    if antiFlingActive then
-        antiFlingActive = false
-        antiFlingBtn.Text = "A-FLING"
-        stopAntiFling()
-    end
 end)
 
 -- === DRAG ===
@@ -815,4 +743,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: FLING (без самоотбрасывания) + ANTI-FLING добавлены")
+print("Haxxx Gui V1: KILL (с вводом ника) добавлена вместо FLING")
