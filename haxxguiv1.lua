@@ -1,4 +1,4 @@
--- haxxguiv1: в HUBS добавлен ScrollingFrame с системными скриптами
+-- haxxguiv1: HUBS с ScrollingFrame и System Broken
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -206,13 +206,12 @@ scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
 scrollFrame.ScrollBarThickness = 8
 scrollFrame.Parent = hubframe
 
--- UIListLayout для автоматического расположения кнопок
 local listLayout = Instance.new("UIListLayout")
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 listLayout.Padding = UDim.new(0, 5)
 listLayout.Parent = scrollFrame
 
--- Функция создания кнопки в ScrollingFrame
+-- Функция добавления кнопок
 local function addHubButton(text, callback)
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -10, 0, 30)
@@ -222,10 +221,9 @@ local function addHubButton(text, callback)
     btn.TextSize = 12
     btn.Parent = scrollFrame
     btn.MouseButton1Click:Connect(callback)
-    return btn
 end
 
--- Добавляем скрипты
+-- СПИСОК СКРИПТОВ
 addHubButton("System Broken", function()
     loadstring([[
         local player = game.Players.LocalPlayer
@@ -267,11 +265,6 @@ addHubButton("FPS Unlocker", function()
     print("FPS cap removed")
 end)
 
-addHubButton("Chat Spammer", function()
-    local spamText = "Haxxx Gui V1"
-    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(spamText, "All")
-end)
-
 addHubButton("Speed Boost x5", function()
     local char = player.Character
     if char and char:FindFirstChild("Humanoid") then
@@ -286,25 +279,13 @@ addHubButton("Jump Boost x3", function()
     end
 end)
 
--- Обновляем CanvasSize после добавления кнопок
-local function updateCanvasSize()
-    local totalHeight = 0
-    for _, child in ipairs(scrollFrame:GetChildren()) do
-        if child:IsA("TextButton") then
-            totalHeight = totalHeight + child.Size.Y.Offset + listLayout.Padding.Offset
-        end
-    end
-    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-end
-
--- Ждём добавления всех кнопок и обновляем
-task.wait(0.1)
-updateCanvasSize()
-
--- Обновляем CanvasSize при изменении списка
-listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+-- Обновление размера Canvas
+local function updateCanvas()
     scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
-end)
+end
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
+task.wait(0.1)
+updateCanvas()
 
 -- === ФУНКЦИЯ НЕВИДИМОСТИ ===
 local invisible = false
@@ -383,7 +364,7 @@ end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- === ЛОГИКА ПРЫЖКА ===
+-- === ПРЫЖОК ===
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
 local function getJump()
     local c = player.Character
@@ -406,7 +387,7 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- === ЛОГИКА FOV ===
+-- === FOV ===
 local camera = workspace.CurrentCamera
 local function updateFOV(value)
     value = math.clamp(value, 50, 120)
@@ -576,7 +557,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === AIM (авто-прицел) ===
+-- === AIM ===
 local aimActive = false
 local aimConnection = nil
 local function getClosestPlayer()
@@ -651,7 +632,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === Функции перемещения ===
+-- === DRAG ===
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -690,7 +671,7 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
--- Обновление дисплея при появлении персонажа
+-- Обновление дисплея
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -700,4 +681,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: в HUBS добавлен ScrollingFrame с 10 скриптами (System Broken и другие)")
+print("Haxxx Gui V1: HUBS с ScrollingFrame и System Broken загружены")
