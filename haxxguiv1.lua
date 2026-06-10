@@ -1,4 +1,4 @@
--- haxxguiv1: нож 4510966153 (модель из Toolbox)
+-- haxxguiv1: нож 4510966153 (исправленная выдача)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -238,26 +238,22 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- === НОЖ ПО ID 4510966153 ===
+-- === НОЖ ПО ID 4510966153 (ИСПРАВЛЕННАЯ ВЫДАЧА) ===
 local knife = nil
-local function giveKnife()
-    if knife and knife.Parent then
-        knife:Destroy()
-    end
-    
-    -- Загружаем модель по ID
-    local success, model = pcall(function()
-        return game:GetService("MarketplaceService"):LoadAsset(4510966153)
+
+local function createKnifeFromModel()
+    local success, result = pcall(function()
+        return game:GetService("InsertService"):LoadAsset(4510966153)
     end)
     
-    if not success or not model then
-        warn("Не удалось загрузить нож по ID 4510966153")
-        return
+    if not success or not result then
+        warn("Ошибка загрузки модели, создаю простой нож")
+        return createSimpleKnife()
     end
     
     -- Ищем Tool в загруженной модели
     local tool = nil
-    for _, child in ipairs(model:GetChildren()) do
+    for _, child in ipairs(result:GetChildren()) do
         if child:IsA("Tool") then
             tool = child
             break
@@ -265,33 +261,33 @@ local function giveKnife()
     end
     
     if not tool then
-        -- Если Tool не найден, создаём свой и добавляем MeshPart
+        -- Создаём свой Tool и переносим Handle
         tool = Instance.new("Tool")
         tool.Name = "Knife"
         tool.RequiresHandle = true
         tool.CanBeDropped = false
         
-        -- Ищем MeshPart или Part, который можно использовать как Handle
         local handlePart = nil
-        for _, child in ipairs(model:GetDescendants()) do
+        for _, child in ipairs(result:GetDescendants()) do
             if (child:IsA("MeshPart") or child:IsA("Part")) and child.Name:lower():find("handle") then
                 handlePart = child
                 break
             end
         end
         if not handlePart then
-            for _, child in ipairs(model:GetDescendants()) do
+            for _, child in ipairs(result:GetDescendants()) do
                 if child:IsA("MeshPart") or child:IsA("Part") then
                     handlePart = child
                     break
                 end
             end
         end
+        
         if handlePart then
             handlePart.Parent = tool
             tool.Handle = handlePart
         else
-            -- Если нет подходящей части, создаём примитивный Handle
+            -- Если нет подходящей части, создаём примитив
             local handle = Instance.new("Part")
             handle.Name = "Handle"
             handle.Size = Vector3.new(0.5, 0.2, 1)
@@ -301,19 +297,64 @@ local function giveKnife()
         end
     end
     
-    -- Если модель не нужна, удаляем контейнер
-    if model ~= tool and model ~= tool.Parent then
-        model:Destroy()
+    -- Удаляем временный контейнер, если он не является самим инструментом
+    if result ~= tool and result.Parent ~= tool then
+        result:Destroy()
+    end
+    
+    return tool
+end
+
+local function createSimpleKnife()
+    -- Резервный нож из частей
+    local tool = Instance.new("Tool")
+    tool.Name = "Knife"
+    tool.RequiresHandle = true
+    tool.CanBeDropped = false
+    tool.ToolTip = "Боевой нож"
+    
+    local handle = Instance.new("Part")
+    handle.Name = "Handle"
+    handle.Size = Vector3.new(0.5, 0.2, 1.2)
+    handle.Material = Enum.Material.Metal
+    handle.Color = Color3.fromRGB(192, 192, 192)
+    handle.CanCollide = false
+    handle.Parent = tool
+    
+    local blade = Instance.new("Part")
+    blade.Name = "Blade"
+    blade.Size = Vector3.new(0.4, 0.1, 1.6)
+    blade.Position = Vector3.new(0, 0, 1.1)
+    blade.Material = Enum.Material.Metal
+    blade.Color = Color3.fromRGB(220, 220, 255)
+    blade.CanCollide = false
+    blade.Parent = handle
+    
+    tool.Handle = handle
+    return tool
+end
+
+local function giveKnife()
+    if knife and knife.Parent then
+        knife:Destroy()
+    end
+    
+    knife = createKnifeFromModel()
+    
+    if not knife then
+        warn("Не удалось создать нож")
+        return
     end
     
     -- Добавляем анимацию и урон
     local debounce = false
-    tool.Activated:Connect(function()
+    local connection
+    connection = knife.Activated:Connect(function()
         if debounce then return end
         debounce = true
         
         local char = player.Character
-        local handle = tool:FindFirstChild("Handle")
+        local handle = knife:FindFirstChild("Handle")
         if char and handle then
             -- Анимация взмаха
             local originalCF = handle.CFrame
@@ -321,7 +362,7 @@ local function giveKnife()
             task.wait(0.05)
             handle.CFrame = originalCF
             
-            -- Эффект удара
+            -- Эффект свечения
             local glow = Instance.new("SelectionBox")
             glow.Adornee = handle
             glow.Color3 = Color3.fromRGB(255, 0, 0)
@@ -331,7 +372,7 @@ local function giveKnife()
             task.wait(0.1)
             glow:Destroy()
             
-            -- Нанесение урона игрокам рядом
+            -- Урон
             for _, plr in ipairs(game.Players:GetPlayers()) do
                 if plr ~= player and plr.Character then
                     local targetChar = plr.Character
@@ -340,7 +381,6 @@ local function giveKnife()
                         local humanoid = targetChar:FindFirstChild("Humanoid")
                         if humanoid then
                             humanoid:TakeDamage(25)
-                            -- Эффект крови
                             local blood = Instance.new("ParticleEmitter")
                             blood.Rate = 100
                             blood.Lifetime = NumberRange.new(0.3)
@@ -359,13 +399,21 @@ local function giveKnife()
         debounce = false
     end)
     
-    knife = tool
+    -- Сохраняем связь для очистки
+    if not knife._connections then knife._connections = {} end
+    table.insert(knife._connections, connection)
+    
     knife.Parent = player.Backpack
     knifeBtn.Text = "KNIFE OUT"
 end
 
 local function removeKnife()
     if knife then
+        if knife._connections then
+            for _, conn in ipairs(knife._connections) do
+                pcall(function() conn:Disconnect() end)
+            end
+        end
         knife:Destroy()
         knife = nil
     end
@@ -642,4 +690,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: загружен нож 4510966153 с анимацией и уроном 25 HP")
+print("Haxxx Gui V1: нож 4510966153 (загрузка через InsertService)")
