@@ -1,4 +1,4 @@
--- haxxguiv1: настоящий нож из частей (Tool) с анимацией и уроном
+-- haxxguiv1: нож 4510966153 (модель из Toolbox)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -179,7 +179,7 @@ iyBtn.Parent = hubframe
 
 iyBtn.MouseButton1Click:Connect(function()
     pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyeld/master/source"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
     end)
 end)
 
@@ -238,88 +238,90 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- === НАСТОЯЩИЙ НОЖ (Tool) ===
+-- === НОЖ ПО ID 4510966153 ===
 local knife = nil
-local function createKnife()
-    local tool = Instance.new("Tool")
-    tool.Name = "Combat Knife"
-    tool.RequiresHandle = true
-    tool.CanBeDropped = false
-    tool.ToolTip = "Боевой нож | Урон: 25 HP"
+local function giveKnife()
+    if knife and knife.Parent then
+        knife:Destroy()
+    end
     
-    -- Рукоять
-    local handle = Instance.new("Part")
-    handle.Name = "Handle"
-    handle.Size = Vector3.new(0.6, 0.2, 1.2)
-    handle.Shape = Enum.PartType.Block
-    handle.Material = Enum.Material.Wood
-    handle.Color = Color3.fromRGB(101, 67, 33)  -- тёмное дерево
-    handle.BrickColor = BrickColor.new("Brown")
-    handle.CanCollide = false
-    handle.Parent = tool
+    -- Загружаем модель по ID
+    local success, model = pcall(function()
+        return game:GetService("MarketplaceService"):LoadAsset(4510966153)
+    end)
     
-    -- Гарда (ограничитель)
-    local guard = Instance.new("Part")
-    guard.Name = "Guard"
-    guard.Size = Vector3.new(0.8, 0.1, 0.2)
-    guard.Position = Vector3.new(0, 0, 0.5)
-    guard.Material = Enum.Material.Metal
-    guard.Color = Color3.fromRGB(192, 192, 192)
-    guard.CanCollide = false
-    guard.Parent = handle
+    if not success or not model then
+        warn("Не удалось загрузить нож по ID 4510966153")
+        return
+    end
     
-    -- Лезвие
-    local blade = Instance.new("Part")
-    blade.Name = "Blade"
-    blade.Size = Vector3.new(0.4, 0.1, 1.6)
-    blade.Position = Vector3.new(0, 0, 1.1)
-    blade.Material = Enum.Material.Metal
-    blade.Color = Color3.fromRGB(220, 220, 255)
-    blade.BrickColor = BrickColor.new("Silver")
-    blade.CanCollide = false
-    blade.Parent = handle
+    -- Ищем Tool в загруженной модели
+    local tool = nil
+    for _, child in ipairs(model:GetChildren()) do
+        if child:IsA("Tool") then
+            tool = child
+            break
+        end
+    end
     
-    -- Остриё (конус)
-    local tip = Instance.new("Part")
-    tip.Name = "Tip"
-    tip.Size = Vector3.new(0.3, 0.3, 0.5)
-    tip.Position = Vector3.new(0, 0, 1.9)
-    tip.Shape = Enum.PartType.Cylinder
-    tip.Material = Enum.Material.Metal
-    tip.Color = Color3.fromRGB(220, 220, 255)
-    tip.BrickColor = BrickColor.new("Silver")
-    tip.CanCollide = false
-    tip.Parent = handle
+    if not tool then
+        -- Если Tool не найден, создаём свой и добавляем MeshPart
+        tool = Instance.new("Tool")
+        tool.Name = "Knife"
+        tool.RequiresHandle = true
+        tool.CanBeDropped = false
+        
+        -- Ищем MeshPart или Part, который можно использовать как Handle
+        local handlePart = nil
+        for _, child in ipairs(model:GetDescendants()) do
+            if (child:IsA("MeshPart") or child:IsA("Part")) and child.Name:lower():find("handle") then
+                handlePart = child
+                break
+            end
+        end
+        if not handlePart then
+            for _, child in ipairs(model:GetDescendants()) do
+                if child:IsA("MeshPart") or child:IsA("Part") then
+                    handlePart = child
+                    break
+                end
+            end
+        end
+        if handlePart then
+            handlePart.Parent = tool
+            tool.Handle = handlePart
+        else
+            -- Если нет подходящей части, создаём примитивный Handle
+            local handle = Instance.new("Part")
+            handle.Name = "Handle"
+            handle.Size = Vector3.new(0.5, 0.2, 1)
+            handle.CanCollide = false
+            handle.Parent = tool
+            tool.Handle = handle
+        end
+    end
     
-    -- Обмотка рукояти (красная лента)
-    local grip = Instance.new("Part")
-    grip.Name = "Grip"
-    grip.Size = Vector3.new(0.65, 0.15, 0.8)
-    grip.Position = Vector3.new(0, 0, -0.3)
-    grip.Material = Enum.Material.Fabric
-    grip.Color = Color3.fromRGB(180, 0, 0)
-    grip.BrickColor = BrickColor.new("Really red")
-    grip.CanCollide = false
-    grip.Parent = handle
+    -- Если модель не нужна, удаляем контейнер
+    if model ~= tool and model ~= tool.Parent then
+        model:Destroy()
+    end
     
-    tool.Handle = handle
-    
-    -- Анимация и урон
+    -- Добавляем анимацию и урон
     local debounce = false
     tool.Activated:Connect(function()
         if debounce then return end
         debounce = true
         
         local char = player.Character
+        local handle = tool:FindFirstChild("Handle")
         if char and handle then
-            -- Анимация: взмах
+            -- Анимация взмаха
             local originalCF = handle.CFrame
-            -- Взмах вправо-вниз
-            handle.CFrame = handle.CFrame * CFrame.Angles(math.rad(-30), math.rad(20), math.rad(-45))
+            handle.CFrame = handle.CFrame * CFrame.Angles(math.rad(-40), math.rad(30), math.rad(-50))
             task.wait(0.05)
             handle.CFrame = originalCF
             
-            -- Эффект свечения при ударе (визуал)
+            -- Эффект удара
             local glow = Instance.new("SelectionBox")
             glow.Adornee = handle
             glow.Color3 = Color3.fromRGB(255, 0, 0)
@@ -329,7 +331,7 @@ local function createKnife()
             task.wait(0.1)
             glow:Destroy()
             
-            -- Поиск цели и нанесение урона
+            -- Нанесение урона игрокам рядом
             for _, plr in ipairs(game.Players:GetPlayers()) do
                 if plr ~= player and plr.Character then
                     local targetChar = plr.Character
@@ -340,7 +342,6 @@ local function createKnife()
                             humanoid:TakeDamage(25)
                             -- Эффект крови
                             local blood = Instance.new("ParticleEmitter")
-                            blood.Texture = "rbxasset://textures/particles/sparkles_main.dds"
                             blood.Rate = 100
                             blood.Lifetime = NumberRange.new(0.3)
                             blood.SpreadAngle = Vector2.new(360, 360)
@@ -358,14 +359,7 @@ local function createKnife()
         debounce = false
     end)
     
-    return tool
-end
-
-local function giveKnife()
-    if knife and knife.Parent then
-        knife:Destroy()
-    end
-    knife = createKnife()
+    knife = tool
     knife.Parent = player.Backpack
     knifeBtn.Text = "KNIFE OUT"
 end
@@ -648,4 +642,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: настоящий нож (рукоять, лезвие, гарда) с анимацией и уроном 25 HP")
+print("Haxxx Gui V1: загружен нож 4510966153 с анимацией и уроном 25 HP")
