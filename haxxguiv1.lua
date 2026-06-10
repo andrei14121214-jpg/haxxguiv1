@@ -1,4 +1,4 @@
--- haxxguiv1: регулировка FOV (+/-), убрана кнопка KNIFE
+-- haxxguiv1: добавлен AIM (авто-прицел)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,8 +9,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР (основное окно + кнопка HUBS)
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 370, 0, 170)
-container.Position = UDim2.new(0.5, -185, 0.5, -85)
+container.Size = UDim2.new(0, 400, 0, 170)
+container.Position = UDim2.new(0.5, -200, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 345, 0, 170)
+main.Size = UDim2.new(0, 375, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -137,14 +137,24 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
+-- === КНОПКИ ESP, AIM ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 70, 0, 25)
+espBtn.Size = UDim2.new(0, 55, 0, 25)
 espBtn.Position = UDim2.new(0, 170, 0, 100)
-espBtn.Text = "ESP OFF"
+espBtn.Text = "ESP"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 12
 espBtn.Parent = main
+
+local aimBtn = Instance.new("TextButton")
+aimBtn.Size = UDim2.new(0, 55, 0, 25)
+aimBtn.Position = UDim2.new(0, 230, 0, 100)
+aimBtn.Text = "AIM"
+aimBtn.BackgroundColor3 = Color3.new(0,0,0)
+aimBtn.TextColor3 = Color3.new(1,1,1)
+aimBtn.TextSize = 12
+aimBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
 local hubsBtn = Instance.new("TextButton")
@@ -245,13 +255,8 @@ local function updateFOV(value)
     camera.FieldOfView = value
     fovLabel.Text = "fov: " .. math.floor(value)
 end
-
-fovPlus.MouseButton1Click:Connect(function()
-    updateFOV(camera.FieldOfView + 5)
-end)
-fovMinus.MouseButton1Click:Connect(function()
-    updateFOV(camera.FieldOfView - 5)
-end)
+fovPlus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView + 5) end)
+fovMinus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView - 5) end)
 
 -- === FLY ===
 local flying = false
@@ -389,14 +394,15 @@ local function disableESP()
 end
 espBtn.MouseButton1Click:Connect(function()
     espActive = not espActive
-    espBtn.Text = espActive and "ESP ON" or "ESP OFF"
     if espActive then
+        espBtn.Text = "ON"
         updateESP()
         if espConn then espConn:Disconnect() end
         espConn = runService.RenderStepped:Connect(function()
             if espActive then updateESP() end
         end)
     else
+        espBtn.Text = "ESP"
         disableESP()
     end
 end)
@@ -409,6 +415,81 @@ player.CharacterAdded:Connect(function()
         espConn = runService.RenderStepped:Connect(function()
             if espActive then updateESP() end
         end)
+    end
+end)
+
+-- === AIM (авто-прицел) ===
+local aimActive = false
+local aimConnection = nil
+local function getClosestPlayer()
+    local closest = nil
+    local minDist = math.huge
+    local character = player.Character
+    if not character then return nil end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+    local myPos = hrp.Position
+    for _, plr in ipairs(game.Players:GetPlayers()) do
+        if plr ~= player and plr.Character then
+            local targetHrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if targetHrp then
+                local dist = (targetHrp.Position - myPos).Magnitude
+                if dist < minDist then
+                    minDist = dist
+                    closest = plr
+                end
+            end
+        end
+    end
+    return closest
+end
+
+local function aimAt(targetPlayer)
+    if not targetPlayer or not targetPlayer.Character then return end
+    local targetHrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not targetHrp then return end
+    local camera = workspace.CurrentCamera
+    local targetPos = targetHrp.Position + Vector3.new(0, 1.5, 0) -- наводим в грудь/голову
+    local currentPos = camera.CFrame.Position
+    local cf = CFrame.new(currentPos, targetPos)
+    camera.CFrame = cf
+end
+
+local function startAim()
+    if aimConnection then aimConnection:Disconnect() end
+    aimConnection = runService.RenderStepped:Connect(function()
+        if aimActive then
+            local target = getClosestPlayer()
+            if target then
+                aimAt(target)
+            end
+        end
+    end)
+end
+
+local function stopAim()
+    if aimConnection then
+        aimConnection:Disconnect()
+        aimConnection = nil
+    end
+end
+
+aimBtn.MouseButton1Click:Connect(function()
+    aimActive = not aimActive
+    if aimActive then
+        aimBtn.Text = "ON"
+        startAim()
+    else
+        aimBtn.Text = "AIM"
+        stopAim()
+    end
+end)
+
+player.CharacterAdded:Connect(function()
+    if aimActive then
+        aimActive = false
+        aimBtn.Text = "AIM"
+        stopAim()
     end
 end)
 
@@ -461,4 +542,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: FOV регулировка (+/-) добавлена, кнопка KNIFE удалена.")
+print("Haxxx Gui V1: авто-прицел (AIM) добавлен. Работает плавно.")
