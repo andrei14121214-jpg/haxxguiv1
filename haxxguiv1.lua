@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка-тоггл "H v1" (перетаскивается), ровные столбцы кнопок
+-- haxxguiv1: ESP выключается при респавне, GUI не пропадает
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,7 +7,7 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- ===== ПЛАВАЮЩАЯ КНОПКА-ТОГГЛ "H v1" (ПЕРЕТАСКИВАЕТСЯ) =====
+-- ===== ПЛАВАЮЩАЯ КНОПКА-ТОГГЛ "H v1" =====
 local toggleHolder = Instance.new("Frame")
 toggleHolder.Name = "ToggleHolder"
 toggleHolder.Size = UDim2.new(0, 50, 0, 50)
@@ -35,7 +35,7 @@ v1Label.TextColor3 = Color3.new(1,1,1)
 v1Label.TextXAlignment = Enum.TextXAlignment.Right
 v1Label.Parent = toggleBtn
 
--- Перетаскивание кнопки H v1
+-- Перетаскивание кнопки H
 local dragToggle = false
 local dragToggleStart, dragTogglePos
 toggleBtn.InputBegan:Connect(function(input)
@@ -361,19 +361,22 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 task.wait(0.1)
 updateCanvas()
 
--- ===== ЛОГИКА ФУНКЦИЙ (SPEED, JUMP, FOV, FLY, NOCLIP, ESP, AIM, A-LAG, A-AFK, INVIS) =====
+-- ===== ЛОГИКА ФУНКЦИЙ =====
+-- SPEED
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed() local c = player.Character if not c then return 16 end local h = c:FindFirstChild("Humanoid") return h and h.WalkSpeed or 16 end
 local function setSpeed(v) v = math.clamp(v, 0, 500) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.WalkSpeed = v updateSpeed(v) end end end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
+-- JUMP
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
 local function getJump() local c = player.Character if not c then return 7.2 end local h = c:FindFirstChild("Humanoid") return h and h.JumpPower or 7.2 end
 local function setJump(v) v = math.clamp(v, 7.2, 200) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.UseJumpPower = true h.JumpPower = v updateJump(v) end end end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
+-- FOV
 local camera = workspace.CurrentCamera
 local function updateFOV(v) v = math.clamp(v, 50, 120) camera.FieldOfView = v fovLabel.Text = "fov: " .. math.floor(v) end
 fovPlus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView + 5) end)
@@ -438,9 +441,6 @@ flyBtn.MouseButton1Click:Connect(function()
     flyBtn.Text = flying and "UNFLY" or "FLY"
     if flying then startFly() else stopFly() end
 end)
-player.CharacterAdded:Connect(function()
-    if flying then stopFly() flying = false flyBtn.Text = "FLY" end
-end)
 
 -- NOCLIP
 local noclipOn = false
@@ -474,11 +474,8 @@ local function toggleNoclip()
     end
 end
 noclipBtn.MouseButton1Click:Connect(toggleNoclip)
-player.CharacterAdded:Connect(function()
-    if noclipOn then stopNoclip() noclipOn = false noclipBtn.Text = "NOCLIP" end
-end)
 
--- ESP
+-- ESP (с возможностью принудительного сброса)
 local espActive = false
 local espHighlights = {}
 local espConn = nil
@@ -501,29 +498,22 @@ local function updateESP()
     end
 end
 local function disableESP()
+    espActive = false
     for _, hl in pairs(espHighlights) do hl:Destroy() end
     espHighlights = {}
     if espConn then espConn:Disconnect() end
+    espConn = nil
+    espBtn.Text = "ESP"
 end
 espBtn.MouseButton1Click:Connect(function()
-    espActive = not espActive
-    if espActive then
+    if not espActive then
+        espActive = true
         espBtn.Text = "ON"
         updateESP()
         if espConn then espConn:Disconnect() end
         espConn = runService.RenderStepped:Connect(function() if espActive then updateESP() end end)
     else
-        espBtn.Text = "ESP"
         disableESP()
-    end
-end)
-player.CharacterAdded:Connect(function()
-    if espActive then
-        disableESP()
-        task.wait(1)
-        updateESP()
-        if espConn then espConn:Disconnect() end
-        espConn = runService.RenderStepped:Connect(function() if espActive then updateESP() end end)
     end
 end)
 
@@ -568,9 +558,6 @@ aimBtn.MouseButton1Click:Connect(function()
     aimActive = not aimActive
     aimBtn.Text = aimActive and "ON" or "AIM"
     if aimActive then startAim() else stopAim() end
-end)
-player.CharacterAdded:Connect(function()
-    if aimActive then aimActive = false aimBtn.Text = "AIM" stopAim() end
 end)
 
 -- ANTI-LAG
@@ -726,7 +713,33 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
--- Обновление дисплея при появлении персонажа
+-- ===== ОБРАБОТКА РЕСПАВНА (ESP выключается, GUI остаётся) =====
+player.CharacterAdded:Connect(function()
+    -- Выключаем ESP, если он был активен
+    if espActive then
+        disableESP()
+    end
+    -- Сбрасываем состояние невидимости (персонаж появляется видимым)
+    if invisible then
+        invisible = false
+        invisBtn.Text = "INVIS"
+        setInvisible(false)
+        origMaterials = {}
+        origTransps = {}
+    end
+    -- Обновляем отображение скорости и прыжка для нового персонажа
+    local char = player.Character
+    if char then
+        task.wait(0.5) -- даём персонажу время загрузиться
+        local hum = char:FindFirstChild("Humanoid")
+        if hum then
+            updateSpeed(hum.WalkSpeed)
+            updateJump(hum.JumpPower)
+        end
+    end
+end)
+
+-- Обновление дисплея при появлении персонажа (первый раз)
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -736,4 +749,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка 'H v1' перетаскивается, все кнопки по столбцам")
+print("Haxxx Gui V1: ESP выключается при респавне, GUI не пропадает")
