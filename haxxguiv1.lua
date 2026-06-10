@@ -1,4 +1,4 @@
--- haxxguiv1 с кнопкой HUBS и выдвижным фреймом (hubframe)
+-- haxxguiv1 с вертикальной кнопкой HUBS слева и выдвижным окном справа
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,9 +7,10 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
+-- ========== ОСНОВНОЕ ОКНО (main) ==========
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 320, 0, 170)  -- увеличил высоту, чтобы поместить кнопку HUBS
-main.Position = UDim2.new(0.5, -160, 0.5, -85)
+main.Size = UDim2.new(0, 320, 0, 170)
+main.Position = UDim2.new(0.5, -200, 0.5, -85)  -- смещаем левее, чтобы хватило места для вертикальной кнопки и окна HUBS
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Active = true
@@ -110,47 +111,58 @@ espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- === Новая кнопка HUBS ===
-local hubsBtn = Instance.new("TextButton")
-hubsBtn.Size = UDim2.new(0, 100, 0, 25)
-hubsBtn.Position = UDim2.new(0, 120, 0, 100)
-hubsBtn.Text = "HUBS"
-hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
-hubsBtn.TextColor3 = Color3.new(1,1,1)
-hubsBtn.TextSize = 14
-hubsBtn.Parent = main
+-- ========== ВЕРТИКАЛЬНАЯ КНОПКА HUBS (слева от main) ==========
+local hubsVertBtn = Instance.new("TextButton")
+hubsVertBtn.Name = "HUBS"
+hubsVertBtn.Size = UDim2.new(0, 40, 0, 170)  -- ширина 40, высота как у main
+hubsVertBtn.Position = UDim2.new(main.Position.X.Scale, main.Position.X.Offset - 45, main.Position.Y.Scale, main.Position.Y.Offset)
+hubsVertBtn.Text = "HUBS"
+hubsVertBtn.TextSize = 14
+hubsVertBtn.TextWrapped = true
+hubsVertBtn.BackgroundColor3 = Color3.new(0,0,0)
+hubsVertBtn.TextColor3 = Color3.new(1,1,1)
+hubsVertBtn.Parent = gui
 
--- === Фрейм hubframe (скрыт по умолчанию) ===
+-- ========== ФРЕЙМ hubframe (справа от main, скрыт по умолчанию) ==========
 local hubframe = Instance.new("Frame")
 hubframe.Name = "hubframe"
-hubframe.Size = UDim2.new(0, 200, 0, 100)
-hubframe.Position = UDim2.new(0.5, -100, 0.5, -50)
+hubframe.Size = UDim2.new(0, 150, 0, 170)  -- высота как у main, ширина меньше
+hubframe.Position = UDim2.new(main.Position.X.Scale, main.Position.X.Offset + main.Size.X.Offset + 10, main.Position.Y.Scale, main.Position.Y.Offset)
 hubframe.BackgroundColor3 = Color3.fromRGB(40,40,40)
 hubframe.BackgroundTransparency = 0.2
 hubframe.Visible = false
-hubframe.Parent = gui  -- размещаем на том же ScreenGui, поверх main
+hubframe.Parent = gui
 
--- UIStroke для hubframe (чёрный, толщина 1)
+-- UIStroke для hubframe
 local hubStroke = Instance.new("UIStroke")
 hubStroke.Color = Color3.new(0,0,0)
 hubStroke.Thickness = 1
 hubStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 hubStroke.Parent = hubframe
 
--- Текст "sur" (или "hubs") внутри hubframe
+-- Текст "hubs" внутри hubframe (заголовок, за который можно перетаскивать)
 local surLabel = Instance.new("TextLabel")
 surLabel.Name = "sur"
-surLabel.Size = UDim2.new(1, 0, 1, 0)
+surLabel.Size = UDim2.new(1, 0, 0, 20)
 surLabel.Position = UDim2.new(0, 0, 0, 0)
-surLabel.BackgroundTransparency = 1
+surLabel.BackgroundColor3 = Color3.new(0,0,0)
 surLabel.Text = "hubs"
 surLabel.TextColor3 = Color3.new(1,1,1)
-surLabel.TextSize = 20
-surLabel.Font = Enum.Font.GothamBold
-surLabel.TextScaled = true
+surLabel.TextSize = 14
 surLabel.Parent = hubframe
 
--- Перетаскивание hubframe (опционально, чтобы можно было двигать)
+-- Содержимое hubframe (можно добавить позже)
+local content = Instance.new("TextLabel")
+content.Size = UDim2.new(1, 0, 1, -20)
+content.Position = UDim2.new(0, 0, 0, 20)
+content.BackgroundTransparency = 1
+content.Text = "Hubs content\n(можно добавить ссылки)"
+content.TextColor3 = Color3.new(1,1,1)
+content.TextSize = 12
+content.TextWrapped = true
+content.Parent = hubframe
+
+-- Перетаскивание hubframe за заголовок
 local dragHubEnabled = false
 local dragHubStart, dragHubStartPos
 surLabel.InputBegan:Connect(function(input)
@@ -172,18 +184,16 @@ surLabel.InputChanged:Connect(function(input)
     end
 end)
 
--- Логика показа/скрытия hubframe по кнопке HUBS
+-- Логика показа/скрытия hubframe по нажатию на вертикальную кнопку HUBS
 local hubsOpen = false
-hubsBtn.MouseButton1Click:Connect(function()
+hubsVertBtn.MouseButton1Click:Connect(function()
     hubsOpen = not hubsOpen
     hubframe.Visible = hubsOpen
-    hubsBtn.Text = hubsOpen and "HUBS ↑" or "HUBS"
+    hubsVertBtn.Text = hubsOpen and "←" or "HUBS"   -- можно стрелку или текст
 end)
 
--- Остальные функции (speed, jump, fly, noclip, ESP) без изменений
--- (копирую их из предыдущего стабильного скрипта, но можно оставить тот же код, что был ранее)
-
--- ========== ЛОГИКА СКОРОСТИ ==========
+-- ========== ЛОГИКА СКОРОСТИ, ПРЫЖКА, FLY, NOCLIP, ESP ==========
+-- (полностью копируем из предыдущего стабильного скрипта)
 local function updateSpeed(v)
     speedLabel.Text = "speed: " .. math.floor(v)
 end
@@ -207,7 +217,6 @@ end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- ========== ЛОГИКА ПРЫЖКА (шаг +1/-1) ==========
 local function updateJump(v)
     jpLabel.Text = "jp: " .. string.format("%.1f", v)
 end
@@ -232,7 +241,7 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- ========== FLY ==========
+-- FLY
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -299,7 +308,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== NOCLIP ==========
+-- NOCLIP
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -346,253 +355,200 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== ESP (улучшенный, из предыдущей версии) ==========
+-- ========== ESP (улучшенный) ==========
 local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 local espEnabled = false
 local allConnections = {}
 local espObjects = {}
 
-local DEFAULT_COLOR = Color3.new(1, 1, 1)
-local NPC_COLOR = Color3.fromRGB(255, 165, 0)
+local DEFAULT_COLOR = Color3.new(1,1,1)
+local NPC_COLOR = Color3.fromRGB(255,165,0)
 
 local function getPlayerColor(plr)
-    if plr.Team then
-        return plr.Team.TeamColor.Color
-    end
+    if plr.Team then return plr.Team.TeamColor.Color end
     return DEFAULT_COLOR
 end
-
 local function getDisplayName(key, model)
-    if typeof(key) == "userdata" and key:IsA("Player") then
-        return key.DisplayName
-    end
+    if typeof(key)=="userdata" and key:IsA("Player") then return key.DisplayName end
     return model.Name
 end
-
 local function getEspColor(key)
-    if typeof(key) == "userdata" and key:IsA("Player") then
-        return getPlayerColor(key)
-    end
-    if typeof(key) == "string" then
+    if typeof(key)=="userdata" and key:IsA("Player") then return getPlayerColor(key) end
+    if typeof(key)=="string" then
         local model = workspace:FindFirstChild(key)
-        if model then
+        if model and model:GetAttribute("EspColor") then
             local attr = model:GetAttribute("EspColor")
-            if attr then
-                local r = tonumber(attr:match("(%d+),%d+,%d+")) or 255
-                local g = tonumber(attr:match("%d+,(%d+),%d+")) or 165
-                local b = tonumber(attr:match("%d+,%d+,(%d+)")) or 0
-                return Color3.fromRGB(r, g, b)
-            end
+            local r = tonumber(attr:match("(%d+),%d+,%d+")) or 255
+            local g = tonumber(attr:match("%d+,(%d+),%d+")) or 165
+            local b = tonumber(attr:match("%d+,%d+,(%d+)")) or 0
+            return Color3.fromRGB(r,g,b)
         end
     end
     return NPC_COLOR
 end
-
 local function removeEsp(key)
     local data = espObjects[key]
     if not data then return end
     if data.highlight then data.highlight:Destroy() end
     if data.billboard then data.billboard:Destroy() end
-    espObjects[key] = nil
+    espObjects[key]=nil
 end
-
-local function createEsp(key, model)
+local function createEsp(key,model)
     if not model then return end
-    if typeof(key) == "userdata" and key == player then return end
-    if model == player.Character then return end
+    if typeof(key)=="userdata" and key==player then return end
+    if model==player.Character then return end
     removeEsp(key)
     local humanoid = model:FindFirstChildOfClass("Humanoid")
     local head = model:FindFirstChild("Head")
     if not humanoid then return end
     local color = getEspColor(key)
     local highlight = Instance.new("Highlight")
-    highlight.Name = "EspHighlight"
-    highlight.FillTransparency = 0.7
-    highlight.OutlineTransparency = 0
-    highlight.FillColor = color
-    highlight.OutlineColor = color
-    highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-    highlight.Parent = model
-    local billboard = nil
-    local nameLabel = nil
-    local healthLabel = nil
+    highlight.Name="EspHighlight"
+    highlight.FillTransparency=0.7
+    highlight.OutlineTransparency=0
+    highlight.FillColor=color
+    highlight.OutlineColor=color
+    highlight.DepthMode=Enum.HighlightDepthMode.AlwaysOnTop
+    highlight.Parent=model
+    local billboard,nameLabel,healthLabel=nil
     if head then
-        billboard = Instance.new("BillboardGui")
-        billboard.Name = "EspBillboard"
-        billboard.Adornee = head
-        billboard.Size = UDim2.new(0, 200, 0, 50)
-        billboard.StudsOffset = Vector3.new(0, 3, 0)
-        billboard.AlwaysOnTop = true
-        billboard.MaxDistance = 500
-        billboard.Parent = model
-        nameLabel = Instance.new("TextLabel")
-        nameLabel.Name = "NameLabel"
-        nameLabel.Size = UDim2.new(1, 0, 0.5, 0)
-        nameLabel.Position = UDim2.new(0, 0, 0, 0)
-        nameLabel.BackgroundTransparency = 1
-        nameLabel.Text = getDisplayName(key, model)
-        nameLabel.TextColor3 = color
-        nameLabel.TextStrokeTransparency = 0.3
-        nameLabel.TextStrokeColor3 = Color3.new(0,0,0)
-        nameLabel.TextScaled = true
-        nameLabel.Font = Enum.Font.GothamBold
-        nameLabel.Parent = billboard
-        healthLabel = Instance.new("TextLabel")
-        healthLabel.Name = "HealthLabel"
-        healthLabel.Size = UDim2.new(1, 0, 0.5, 0)
-        healthLabel.Position = UDim2.new(0, 0, 0.5, 0)
-        healthLabel.BackgroundTransparency = 1
-        healthLabel.Text = "HP: " .. math.floor(humanoid.Health) .. "/" .. math.floor(humanoid.MaxHealth)
-        healthLabel.TextColor3 = Color3.fromRGB(0,255,0)
-        healthLabel.TextStrokeTransparency = 0.3
-        healthLabel.TextStrokeColor3 = Color3.new(0,0,0)
-        healthLabel.TextScaled = true
-        healthLabel.Font = Enum.Font.GothamBold
-        healthLabel.Parent = billboard
+        billboard=Instance.new("BillboardGui")
+        billboard.Name="EspBillboard"
+        billboard.Adornee=head
+        billboard.Size=UDim2.new(0,200,0,50)
+        billboard.StudsOffset=Vector3.new(0,3,0)
+        billboard.AlwaysOnTop=true
+        billboard.MaxDistance=500
+        billboard.Parent=model
+        nameLabel=Instance.new("TextLabel")
+        nameLabel.Size=UDim2.new(1,0,0.5,0)
+        nameLabel.Position=UDim2.new(0,0,0,0)
+        nameLabel.BackgroundTransparency=1
+        nameLabel.Text=getDisplayName(key,model)
+        nameLabel.TextColor3=color
+        nameLabel.TextStrokeTransparency=0.3
+        nameLabel.TextStrokeColor3=Color3.new(0,0,0)
+        nameLabel.TextScaled=true
+        nameLabel.Font=Enum.Font.GothamBold
+        nameLabel.Parent=billboard
+        healthLabel=Instance.new("TextLabel")
+        healthLabel.Size=UDim2.new(1,0,0.5,0)
+        healthLabel.Position=UDim2.new(0,0,0.5,0)
+        healthLabel.BackgroundTransparency=1
+        healthLabel.Text="HP: "..math.floor(humanoid.Health).."/"..math.floor(humanoid.MaxHealth)
+        healthLabel.TextColor3=Color3.fromRGB(0,255,0)
+        healthLabel.TextStrokeTransparency=0.3
+        healthLabel.TextStrokeColor3=Color3.new(0,0,0)
+        healthLabel.TextScaled=true
+        healthLabel.Font=Enum.Font.GothamBold
+        healthLabel.Parent=billboard
     end
-    espObjects[key] = { model = model, highlight = highlight, billboard = billboard, nameLabel = nameLabel, healthLabel = healthLabel }
+    espObjects[key]={model=model,highlight=highlight,billboard=billboard,nameLabel=nameLabel,healthLabel=healthLabel}
 end
-
 local function updateEspColor(key)
-    local data = espObjects[key]
+    local data=espObjects[key]
     if not data then return end
-    local color = getEspColor(key)
+    local color=getEspColor(key)
     if data.highlight then
-        data.highlight.FillColor = color
-        data.highlight.OutlineColor = color
+        data.highlight.FillColor=color
+        data.highlight.OutlineColor=color
     end
-    if data.nameLabel then
-        data.nameLabel.TextColor3 = color
-    end
+    if data.nameLabel then data.nameLabel.TextColor3=color end
 end
-
 local function updateHealth(key)
-    local data = espObjects[key]
+    local data=espObjects[key]
     if not data or not data.healthLabel then return end
-    local model = data.model
-    if not model or model.Parent == nil then return end
-    local humanoid = model:FindFirstChildOfClass("Humanoid")
+    local model=data.model
+    if not model or model.Parent==nil then return end
+    local humanoid=model:FindFirstChildOfClass("Humanoid")
     if not humanoid then return end
-    local hp = math.floor(humanoid.Health)
-    local maxHp = math.floor(humanoid.MaxHealth)
-    data.healthLabel.Text = "HP: " .. hp .. "/" .. maxHp
-    local ratio = humanoid.Health / humanoid.MaxHealth
-    if ratio > 0.5 then
-        data.healthLabel.TextColor3 = Color3.fromRGB(0,255,0)
-    elseif ratio > 0.25 then
-        data.healthLabel.TextColor3 = Color3.fromRGB(255,255,0)
-    else
-        data.healthLabel.TextColor3 = Color3.fromRGB(255,0,0)
-    end
+    local hp=math.floor(humanoid.Health)
+    local maxHp=math.floor(humanoid.MaxHealth)
+    data.healthLabel.Text="HP: "..hp.."/"..maxHp
+    local ratio=humanoid.Health/humanoid.MaxHealth
+    if ratio>0.5 then data.healthLabel.TextColor3=Color3.fromRGB(0,255,0)
+    elseif ratio>0.25 then data.healthLabel.TextColor3=Color3.fromRGB(255,255,0)
+    else data.healthLabel.TextColor3=Color3.fromRGB(255,0,0) end
 end
-
 local function getPlayerFromModel(model)
-    for _, pl in ipairs(Players:GetPlayers()) do
-        if pl.Character == model then
-            return pl
-        end
+    for _,pl in ipairs(Players:GetPlayers()) do
+        if pl.Character==model then return pl end
     end
     return nil
 end
-
 local function scanNpcs()
-    for _, descendant in ipairs(workspace:GetDescendants()) do
-        if descendant:IsA("Model") and descendant:FindFirstChildOfClass("Humanoid") then
-            local pl = getPlayerFromModel(descendant)
-            if not pl and descendant ~= player.Character then
-                createEsp(descendant.Name, descendant)
+    for _,desc in ipairs(workspace:GetDescendants()) do
+        if desc:IsA("Model") and desc:FindFirstChildOfClass("Humanoid") then
+            local pl=getPlayerFromModel(desc)
+            if not pl and desc~=player.Character then
+                createEsp(desc.Name,desc)
             end
         end
     end
 end
-
 local function setupPlayerTracking(pl)
-    if pl == player then return end
-    local charConn = pl.CharacterAdded:Connect(function(character)
-        if espEnabled then
-            task.wait(0.5)
-            createEsp(pl, character)
-        end
+    if pl==player then return end
+    local charConn=pl.CharacterAdded:Connect(function(character)
+        if espEnabled then task.wait(0.5) createEsp(pl,character) end
     end)
-    local teamConn = pl:GetPropertyChangedSignal("Team"):Connect(function()
-        if espEnabled then
-            updateEspColor(pl)
-        end
+    local teamConn=pl:GetPropertyChangedSignal("Team"):Connect(function()
+        if espEnabled then updateEspColor(pl) end
     end)
-    if pl.Character then
-        task.wait(0.1)
-        createEsp(pl, pl.Character)
-    end
-    table.insert(allConnections, charConn)
-    table.insert(allConnections, teamConn)
+    if pl.Character then task.wait(0.1) createEsp(pl,pl.Character) end
+    table.insert(allConnections,charConn)
+    table.insert(allConnections,teamConn)
 end
-
 local function enableEsp()
-    espEnabled = true
-    for _, pl in ipairs(Players:GetPlayers()) do
-        setupPlayerTracking(pl)
-    end
-    local playerAddedConn = Players.PlayerAdded:Connect(function(pl)
+    espEnabled=true
+    for _,pl in ipairs(Players:GetPlayers()) do setupPlayerTracking(pl) end
+    local playerAddedConn=Players.PlayerAdded:Connect(function(pl)
         if espEnabled then setupPlayerTracking(pl) end
     end)
-    local playerRemovingConn = Players.PlayerRemoving:Connect(function(pl)
-        removeEsp(pl)
-    end)
-    table.insert(allConnections, playerAddedConn)
-    table.insert(allConnections, playerRemovingConn)
+    local playerRemovingConn=Players.PlayerRemoving:Connect(function(pl) removeEsp(pl) end)
+    table.insert(allConnections,playerAddedConn)
+    table.insert(allConnections,playerRemovingConn)
     scanNpcs()
-    local npcAddedConn = workspace.DescendantAdded:Connect(function(desc)
+    local npcAddedConn=workspace.DescendantAdded:Connect(function(desc)
         if not espEnabled then return end
         if desc:IsA("Humanoid") then
             task.wait(0.5)
-            local model = desc.Parent
+            local model=desc.Parent
             if model and model:IsA("Model") then
-                local pl = getPlayerFromModel(model)
-                if not pl and model ~= player.Character then
-                    createEsp(model.Name, model)
+                local pl=getPlayerFromModel(model)
+                if not pl and model~=player.Character then
+                    createEsp(model.Name,model)
                 end
             end
         end
     end)
-    local npcRemovingConn = workspace.DescendantRemoving:Connect(function(desc)
-        if desc:IsA("Model") and espObjects[desc.Name] then
-            removeEsp(desc.Name)
-        end
+    local npcRemovingConn=workspace.DescendantRemoving:Connect(function(desc)
+        if desc:IsA("Model") and espObjects[desc.Name] then removeEsp(desc.Name) end
     end)
-    local healthLoopConn = RunService.Heartbeat:Connect(function()
+    local healthLoopConn=RunService.Heartbeat:Connect(function()
         if not espEnabled then return end
-        for k, _ in pairs(espObjects) do
-            updateHealth(k)
-        end
+        for k,_ in pairs(espObjects) do updateHealth(k) end
     end)
-    table.insert(allConnections, npcAddedConn)
-    table.insert(allConnections, npcRemovingConn)
-    table.insert(allConnections, healthLoopConn)
+    table.insert(allConnections,npcAddedConn)
+    table.insert(allConnections,npcRemovingConn)
+    table.insert(allConnections,healthLoopConn)
 end
-
 local function disableEsp()
-    espEnabled = false
-    for key, _ in pairs(espObjects) do
-        removeEsp(key)
-    end
-    for _, conn in ipairs(allConnections) do
-        pcall(function() conn:Disconnect() end)
-    end
-    allConnections = {}
+    espEnabled=false
+    for key,_ in pairs(espObjects) do removeEsp(key) end
+    for _,conn in ipairs(allConnections) do pcall(function() conn:Disconnect() end) end
+    allConnections={}
 end
-
 espBtn.MouseButton1Click:Connect(function()
-    espEnabled = not espEnabled
+    espEnabled=not espEnabled
     if espEnabled then
-        espBtn.Text = "ESP ON"
+        espBtn.Text="ESP ON"
         enableEsp()
     else
-        espBtn.Text = "ESP OFF"
+        espBtn.Text="ESP OFF"
         disableEsp()
     end
 end)
-
 player.CharacterAdded:Connect(function()
     if espEnabled then
         disableEsp()
@@ -603,7 +559,7 @@ end)
 
 -- Обновление отображения скорости и прыжка при появлении персонажа
 local function onChar(char)
-    local hum = char:WaitForChild("Humanoid")
+    local hum=char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
     updateJump(hum.JumpPower)
     hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function() updateSpeed(hum.WalkSpeed) end)
@@ -611,4 +567,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1 загружен: добавлена кнопка HUBS с выдвижным фреймом (перетаскивается за текст 'hubs').")
+print("Haxxx Gui V1: вертикальная кнопка HUBS слева, окно hubframe справа.")
