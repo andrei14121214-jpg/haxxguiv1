@@ -1,6 +1,4 @@
--- Замени ВЕСЬ старый скрипт на этот (полностью обновлённый)
-
--- haxxguiv1: HUBS с ScrollingFrame + System Broken (loadstring)
+-- haxxguiv1: полностью рабочий GUI с кнопкой System Broken в окне hubs
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -225,7 +223,7 @@ local function addHubButton(text, callback)
     btn.MouseButton1Click:Connect(callback)
 end
 
--- === System Broken (ТВОЙ loadstring) ===
+-- === КНОПКА SYSTEM BROKEN (loadstring) ===
 addHubButton("System Broken", function()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script"))()
 end)
@@ -601,13 +599,8 @@ end
 
 aimBtn.MouseButton1Click:Connect(function()
     aimActive = not aimActive
-    if aimActive then
-        aimBtn.Text = "ON"
-        startAim()
-    else
-        aimBtn.Text = "AIM"
-        stopAim()
-    end
+    aimBtn.Text = aimActive and "ON" or "AIM"
+    if aimActive then startAim() else stopAim() end
 end)
 
 player.CharacterAdded:Connect(function()
@@ -667,4 +660,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: HUBS с ScrollingFrame и System Broken (твой loadstring) загружены")
+print("Haxxx Gui V1: полностью рабочий, System Broken в окне hubs")
