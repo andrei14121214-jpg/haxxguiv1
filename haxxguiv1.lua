@@ -1,4 +1,4 @@
--- haxxguiv1 ТОЧНАЯ КОПИЯ СКРИНШОТА (speed: X+ / jp: X+ / FLY / NOCLIP / ESP / DRAG)
+-- haxxguiv1 для MM2: ESP на шерифа и убийцу, прыжок +1/-1, исправлены отступы
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -8,8 +8,8 @@ gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 260, 0, 130)
-main.Position = UDim2.new(0.5, -130, 0.5, -65)
+main.Size = UDim2.new(0, 300, 0, 140)
+main.Position = UDim2.new(0.5, -150, 0.5, -70)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Active = true
@@ -28,7 +28,7 @@ title.Parent = main
 
 -- === Строка скорости ===
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0, 80, 0, 25)
+speedLabel.Size = UDim2.new(0, 100, 0, 25)
 speedLabel.Position = UDim2.new(0, 10, 0, 30)
 speedLabel.BackgroundColor3 = Color3.new(0,0,0)
 speedLabel.Text = "speed: 16"
@@ -38,7 +38,7 @@ speedLabel.Parent = main
 
 local speedMinus = Instance.new("TextButton")
 speedMinus.Size = UDim2.new(0, 25, 0, 25)
-speedMinus.Position = UDim2.new(0, 95, 0, 30)
+speedMinus.Position = UDim2.new(0, 115, 0, 30)
 speedMinus.Text = "-"
 speedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedMinus.TextColor3 = Color3.new(0,0,0)
@@ -47,7 +47,7 @@ speedMinus.Parent = main
 
 local speedPlus = Instance.new("TextButton")
 speedPlus.Size = UDim2.new(0, 25, 0, 25)
-speedPlus.Position = UDim2.new(0, 125, 0, 30)
+speedPlus.Position = UDim2.new(0, 145, 0, 30)
 speedPlus.Text = "+"
 speedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedPlus.TextColor3 = Color3.new(0,0,0)
@@ -56,7 +56,7 @@ speedPlus.Parent = main
 
 local flyBtn = Instance.new("TextButton")
 flyBtn.Size = UDim2.new(0, 55, 0, 25)
-flyBtn.Position = UDim2.new(0, 170, 0, 30)
+flyBtn.Position = UDim2.new(0, 190, 0, 30)
 flyBtn.Text = "FLY"
 flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
@@ -65,7 +65,7 @@ flyBtn.Parent = main
 
 -- === Строка прыжка ===
 local jpLabel = Instance.new("TextLabel")
-jpLabel.Size = UDim2.new(0, 80, 0, 25)
+jpLabel.Size = UDim2.new(0, 100, 0, 25)
 jpLabel.Position = UDim2.new(0, 10, 0, 65)
 jpLabel.BackgroundColor3 = Color3.new(0,0,0)
 jpLabel.Text = "jp: 7.2"
@@ -75,25 +75,25 @@ jpLabel.Parent = main
 
 local jumpMinus = Instance.new("TextButton")
 jumpMinus.Size = UDim2.new(0, 25, 0, 25)
-jumpMinus.Position = UDim2.new(0, 95, 0, 65)
-jumpMinus.Text = "-2"
+jumpMinus.Position = UDim2.new(0, 115, 0, 65)
+jumpMinus.Text = "-"
 jumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpMinus.TextColor3 = Color3.new(0,0,0)
-jumpMinus.TextSize = 14
+jumpMinus.TextSize = 16
 jumpMinus.Parent = main
 
 local jumpPlus = Instance.new("TextButton")
 jumpPlus.Size = UDim2.new(0, 25, 0, 25)
-jumpPlus.Position = UDim2.new(0, 125, 0, 65)
-jumpPlus.Text = "+2"
+jumpPlus.Position = UDim2.new(0, 145, 0, 65)
+jumpPlus.Text = "+"
 jumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpPlus.TextColor3 = Color3.new(0,0,0)
-jumpPlus.TextSize = 14
+jumpPlus.TextSize = 16
 jumpPlus.Parent = main
 
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Size = UDim2.new(0, 55, 0, 25)
-noclipBtn.Position = UDim2.new(0, 170, 0, 65)
+noclipBtn.Position = UDim2.new(0, 190, 0, 65)
 noclipBtn.Text = "NOCLIP"
 noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
@@ -102,15 +102,15 @@ noclipBtn.Parent = main
 
 -- === Кнопка ESP ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 100, 0, 25)
-espBtn.Position = UDim2.new(0.5, -50, 0, 100)
+espBtn.Size = UDim2.new(0, 120, 0, 25)
+espBtn.Position = UDim2.new(0.5, -60, 0, 105)
 espBtn.Text = "ESP OFF"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- Drag
+-- Drag (перетаскивание)
 local dragEnabled = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -177,10 +177,10 @@ local function setJump(v)
         end
     end
 end
-jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 2) end)
-jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 2) end)
+jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
+jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- FLY
+-- FLY (без изменений)
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -247,7 +247,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- NOCLIP
+-- NOCLIP (без изменений)
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -294,26 +294,59 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ESP
+-- ========== ESP для MM2 (шериф и убийца) ==========
+-- Функция определения роли в Murder Mystery 2
+local function getRole(plr)
+    -- Пробуем разные пути получения роли
+    local role = nil
+    -- Вариант 1: через Data (часто используется)
+    if plr:FindFirstChild("Data") and plr.Data:FindFirstChild("Role") then
+        role = plr.Data.Role.Value
+    -- Вариант 2: через PlayerGui (для клиента)
+    elseif plr:FindFirstChild("PlayerGui") then
+        local gui = plr.PlayerGui:FindFirstChild("MainGui")
+        if gui and gui:FindFirstChild("role") then
+            role = gui.role.Text
+        end
+    end
+    return role
+end
+
 local espActive = false
 local espHighlights = {}
 local espConnection = nil
+
 local function updateESP()
+    if not espActive then return end
     for _, plr in ipairs(game.Players:GetPlayers()) do
         if plr ~= player then
             local char = plr.Character
             if char then
-                if not espHighlights[plr] or espHighlights[plr].Parent ~= char then
-                    if espHighlights[plr] then espHighlights[plr]:Destroy() end
-                    local hl = Instance.new("Highlight")
-                    hl.FillColor = Color3.fromRGB(255, 0, 0)
-                    hl.FillTransparency = 0.7
-                    hl.OutlineColor = Color3.fromRGB(255, 255, 0)
-                    hl.OutlineTransparency = 0
-                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                    hl.Adornee = char
-                    hl.Parent = char
-                    espHighlights[plr] = hl
+                local role = getRole(plr)
+                local color = nil
+                if role == "Murderer" then
+                    color = Color3.fromRGB(255, 0, 0) -- красный
+                elseif role == "Sheriff" then
+                    color = Color3.fromRGB(0, 0, 255) -- синий
+                end
+                if color then
+                    if not espHighlights[plr] or espHighlights[plr].Parent ~= char then
+                        if espHighlights[plr] then espHighlights[plr]:Destroy() end
+                        local hl = Instance.new("Highlight")
+                        hl.FillColor = color
+                        hl.FillTransparency = 0.6
+                        hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                        hl.OutlineTransparency = 0
+                        hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                        hl.Adornee = char
+                        hl.Parent = char
+                        espHighlights[plr] = hl
+                    end
+                else
+                    if espHighlights[plr] then
+                        espHighlights[plr]:Destroy()
+                        espHighlights[plr] = nil
+                    end
                 end
             else
                 if espHighlights[plr] then
@@ -324,12 +357,14 @@ local function updateESP()
         end
     end
 end
+
 local function clearESP()
     for _, hl in pairs(espHighlights) do
         if hl then hl:Destroy() end
     end
     espHighlights = {}
 end
+
 local function toggleESP()
     espActive = not espActive
     espBtn.Text = espActive and "ESP ON" or "ESP OFF"
@@ -344,6 +379,7 @@ local function toggleESP()
         clearESP()
     end
 end
+
 espBtn.MouseButton1Click:Connect(toggleESP)
 game.Players.PlayerRemoving:Connect(function(plr)
     if espHighlights[plr] then
@@ -365,4 +401,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Точная копия интерфейса загружена. Работает перетаскивание, скорость +1/-1, прыжок +2/-2, FLY, NOCLIP, ESP.")
+print("MM2 GUI загружен: скорость +/-1, прыжок +/-1, ESP на убийцу (красный) и шерифа (синий).")
