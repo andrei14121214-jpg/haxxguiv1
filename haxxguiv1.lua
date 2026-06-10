@@ -1,4 +1,4 @@
--- haxxguiv1: ANTI-LAG + ANTI-AFK (убрана KILL)
+-- haxxguiv1 FIXED: ANTI-LAG + ANTI-AFK (все кнопки на месте)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,8 +9,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 600, 0, 170)
-container.Position = UDim2.new(0.5, -300, 0.5, -85)
+container.Size = UDim2.new(0, 620, 0, 170)
+container.Position = UDim2.new(0.5, -310, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 575, 0, 170)
+main.Size = UDim2.new(0, 595, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -34,7 +34,7 @@ title.TextColor3 = Color3.new(1,1,1)
 title.TextSize = 14
 title.Parent = main
 
--- === Строка скорости ===
+-- speed
 local speedLabel = Instance.new("TextLabel")
 speedLabel.Size = UDim2.new(0, 70, 0, 25)
 speedLabel.Position = UDim2.new(0, 10, 0, 30)
@@ -71,7 +71,7 @@ flyBtn.TextColor3 = Color3.new(1,1,1)
 flyBtn.TextSize = 12
 flyBtn.Parent = main
 
--- === Строка прыжка ===
+-- jump
 local jpLabel = Instance.new("TextLabel")
 jpLabel.Size = UDim2.new(0, 70, 0, 25)
 jpLabel.Position = UDim2.new(0, 10, 0, 65)
@@ -108,7 +108,7 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 12
 noclipBtn.Parent = main
 
--- === Строка FOV ===
+-- fov
 local fovLabel = Instance.new("TextLabel")
 fovLabel.Size = UDim2.new(0, 70, 0, 25)
 fovLabel.Position = UDim2.new(0, 10, 0, 100)
@@ -136,7 +136,7 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ (ESP, AIM, ANTI-LAG, ANTI-AFK, INVIS) ===
+-- КНОПКИ
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 60, 0, 25)
 espBtn.Position = UDim2.new(0, 155, 0, 100)
@@ -182,7 +182,7 @@ invisBtn.TextColor3 = Color3.new(1,1,1)
 invisBtn.TextSize = 11
 invisBtn.Parent = main
 
--- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
+-- HUBS
 local hubsBtn = Instance.new("TextButton")
 hubsBtn.Name = "HUBS"
 hubsBtn.Size = UDim2.new(0, 25, 0, 170)
@@ -194,7 +194,7 @@ hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
 hubsBtn.TextColor3 = Color3.new(1,1,1)
 hubsBtn.Parent = container
 
--- === ОКНО HUBS ===
+-- hubframe
 local hubframe = Instance.new("Frame")
 hubframe.Size = UDim2.new(0, 180, 0, 170)
 hubframe.Position = UDim2.new(0, container.Position.X.Offset + container.Size.X.Offset + 10, 0, container.Position.Y.Offset)
@@ -284,7 +284,7 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 task.wait(0.1)
 updateCanvas()
 
--- === ФУНКЦИЯ НЕВИДИМОСТИ ===
+-- INVIS
 local invisible = false
 local originalMaterials = {}
 local originalTransparencies = {}
@@ -339,7 +339,7 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- === ЛОГИКА СКОРОСТИ ===
+-- SPEED
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed()
     local c = player.Character
@@ -361,7 +361,7 @@ end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- === ПРЫЖОК ===
+-- JUMP
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
 local function getJump()
     local c = player.Character
@@ -384,7 +384,7 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- === FOV ===
+-- FOV
 local camera = workspace.CurrentCamera
 local function updateFOV(value)
     value = math.clamp(value, 50, 120)
@@ -394,7 +394,7 @@ end
 fovPlus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView + 5) end)
 fovMinus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView - 5) end)
 
--- === FLY ===
+-- FLY
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -461,7 +461,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === NOCLIP ===
+-- NOCLIP
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -501,7 +501,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === ESP ===
+-- ESP
 local espActive = false
 local espHighlights = {}
 local espConn = nil
@@ -554,7 +554,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === AIM ===
+-- AIM
 local aimActive = false
 local aimConnection = nil
 local function getClosestPlayer()
@@ -579,7 +579,6 @@ local function getClosestPlayer()
     end
     return closest
 end
-
 local function aimAt(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     local targetHrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
@@ -587,52 +586,34 @@ local function aimAt(targetPlayer)
     local camera = workspace.CurrentCamera
     local targetPos = targetHrp.Position + Vector3.new(0, 1.5, 0)
     local currentPos = camera.CFrame.Position
-    local cf = CFrame.new(currentPos, targetPos)
-    camera.CFrame = cf
+    camera.CFrame = CFrame.new(currentPos, targetPos)
 end
-
 local function startAim()
     if aimConnection then aimConnection:Disconnect() end
     aimConnection = runService.RenderStepped:Connect(function()
         if aimActive then
             local target = getClosestPlayer()
-            if target then
-                aimAt(target)
-            end
+            if target then aimAt(target) end
         end
     end)
 end
-
 local function stopAim()
-    if aimConnection then
-        aimConnection:Disconnect()
-        aimConnection = nil
-    end
+    if aimConnection then aimConnection:Disconnect() end
 end
-
 aimBtn.MouseButton1Click:Connect(function()
     aimActive = not aimActive
     aimBtn.Text = aimActive and "ON" or "AIM"
     if aimActive then startAim() else stopAim() end
 end)
-
 player.CharacterAdded:Connect(function()
-    if aimActive then
-        aimActive = false
-        aimBtn.Text = "AIM"
-        stopAim()
-    end
+    if aimActive then aimActive = false aimBtn.Text = "AIM" stopAim() end
 end)
 
--- === ANTI-LAG (уменьшение графики и частиц) ===
+-- ANTI-LAG
 local antiLagActive = false
-local originalMaterials = {}
-
 local function applyAntiLag(state)
     if state then
-        -- Уменьшаем качество графики (если применимо)
         settings().Rendering.QualityLevel = 1
-        -- Удаляем частицы и свет
         for _, v in ipairs(workspace:GetDescendants()) do
             if v:IsA("ParticleEmitter") or v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") then
                 v.Enabled = false
@@ -640,7 +621,6 @@ local function applyAntiLag(state)
                 v.Transparency = 1
             end
         end
-        print("[Anti-Lag] Включён (графика снижена, частицы отключены)")
     else
         settings().Rendering.QualityLevel = 21
         for _, v in ipairs(workspace:GetDescendants()) do
@@ -650,35 +630,21 @@ local function applyAntiLag(state)
                 v.Transparency = 0
             end
         end
-        print("[Anti-Lag] Выключен (графика восстановлена)")
     end
 end
-
 antiLagBtn.MouseButton1Click:Connect(function()
     antiLagActive = not antiLagActive
     antiLagBtn.Text = antiLagActive and "A-L ON" or "A-LAG"
     applyAntiLag(antiLagActive)
 end)
 
-player.CharacterAdded:Connect(function()
-    if antiLagActive then
-        antiLagActive = false
-        antiLagBtn.Text = "A-LAG"
-        applyAntiLag(false)
-    end
-end)
-
--- === ANTI-AFK (защита от кика за бездействие) ===
+-- ANTI-AFK
 local antiAfkActive = false
 local antiAfkConnection = nil
 local lastMove = tick()
-
 local function simulateActivity()
     if not antiAfkActive then return end
-    -- Эмулируем движение камеры или нажатие клавиш
     if tick() - lastMove > 50 then
-        local uis = game:GetService("UserInputService")
-        -- Имитируем движение мыши (без реального вмешательства)
         local cam = workspace.CurrentCamera
         local cf = cam.CFrame
         cam.CFrame = cf * CFrame.Angles(0, math.rad(1), 0)
@@ -687,51 +653,26 @@ local function simulateActivity()
         lastMove = tick()
     end
 end
-
 local function startAntiAfk()
     if antiAfkConnection then antiAfkConnection:Disconnect() end
-    antiAfkConnection = game:GetService("RunService").Heartbeat:Connect(function()
-        if antiAfkActive then
-            simulateActivity()
-        end
-    end)
+    antiAfkConnection = runService.Heartbeat:Connect(simulateActivity)
 end
-
 local function stopAntiAfk()
-    if antiAfkConnection then
-        antiAfkConnection:Disconnect()
-        antiAfkConnection = nil
-    end
+    if antiAfkConnection then antiAfkConnection:Disconnect() end
 end
-
 antiAfkBtn.MouseButton1Click:Connect(function()
     antiAfkActive = not antiAfkActive
     antiAfkBtn.Text = antiAfkActive and "A-A ON" or "A-AFK"
-    if antiAfkActive then
-        startAntiAfk()
-        print("[Anti-AFK] Включена защита от кика")
-    else
-        stopAntiAfk()
-        print("[Anti-AFK] Защита отключена")
-    end
+    if antiAfkActive then startAntiAfk() else stopAntiAfk() end
 end)
 
-player.CharacterAdded:Connect(function()
-    if antiAfkActive then
-        antiAfkActive = false
-        antiAfkBtn.Text = "A-AFK"
-        stopAntiAfk()
-    end
-end)
-
--- === DRAG ===
+-- DRAG
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
     local contSize = container.AbsoluteSize
     hubframe.Position = UDim2.new(0, contPos.X + contSize.X + 10, 0, contPos.Y)
 end
-
 local dragContainer = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -740,10 +681,8 @@ title.InputBegan:Connect(function(input)
         dragStart = input.Position
         startPos = container.Position
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragContainer = false
-                if hubframe.Visible then updateHubframePosition() end
-            end
+            if input.UserInputState == Enum.UserInputState.End then dragContainer = false
+            if hubframe.Visible then updateHubframePosition() end
         end)
     end
 end)
@@ -754,7 +693,6 @@ title.InputChanged:Connect(function(input)
         if hubframe.Visible then updateHubframePosition() end
     end
 end)
-
 local hubsOpen = false
 hubsBtn.MouseButton1Click:Connect(function()
     hubsOpen = not hubsOpen
@@ -763,7 +701,6 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
--- Обновление дисплея
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -773,4 +710,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: ANTI-LAG (графика/частицы) + ANTI-AFK (защита от кика)")
+print("Haxxx Gui V1: ANTI-LAG + ANTI-AFK (кнопки выровнены)")
