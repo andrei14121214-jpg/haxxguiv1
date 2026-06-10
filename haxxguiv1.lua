@@ -1,10 +1,10 @@
--- haxxguiv1: ESP выключается при респавне, GUI не пропадает
+-- haxxguiv1: GUI не пропадает после смерти, ESP и др. сбрасываются
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "haxxguiv1"
-gui.ResetOnSpawn = true
+gui.ResetOnSpawn = false  -- <-- ГЛАВНОЕ: GUI не исчезает после смерти
 gui.Parent = player:WaitForChild("PlayerGui")
 
 -- ===== ПЛАВАЮЩАЯ КНОПКА-ТОГГЛ "H v1" =====
@@ -749,4 +749,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: ESP выключается при респавне, GUI не пропадает")
+print("Haxxx Gui V1: GUI НЕ исчезает после смерти, ESP выключается при респавне")
