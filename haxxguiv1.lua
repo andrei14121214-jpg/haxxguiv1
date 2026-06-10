@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка‑тоггл для открытия/закрытия меню
+-- haxxguiv1: кнопка‑тоггл (☰) открывает/закрывает меню
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -11,7 +11,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Name = "ToggleMenu"
 toggleBtn.Size = UDim2.new(0, 40, 0, 40)
-toggleBtn.Position = UDim2.new(1, -50, 0, 10)  -- правый верхний угол
+toggleBtn.Position = UDim2.new(1, -50, 0, 10)
 toggleBtn.Text = "☰"
 toggleBtn.TextSize = 24
 toggleBtn.TextColor3 = Color3.new(1,1,1)
@@ -26,7 +26,7 @@ container.Name = "Container"
 container.Size = UDim2.new(0, 620, 0, 170)
 container.Position = UDim2.new(0.5, -310, 0.5, -85)
 container.BackgroundTransparency = 1
-container.Visible = true  -- изначально видимо
+container.Visible = true
 container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
@@ -298,8 +298,6 @@ task.wait(0.1)
 updateCanvas()
 
 -- ===== ФУНКЦИИ (SPEED, JUMP, FOV, FLY, NOCLIP, ESP, AIM, A-LAG, A-AFK, INVIS) =====
--- (код функций – такой же, как в предыдущей стабильной версии)
-
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed() local c = player.Character if not c then return 16 end local h = c:FindFirstChild("Humanoid") return h and h.WalkSpeed or 16 end
 local function setSpeed(v) v = math.clamp(v, 0, 500) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.WalkSpeed = v updateSpeed(v) end end end
@@ -611,7 +609,7 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- ===== DRAG (перетаскивание контейнера) =====
+-- ===== DRAG =====
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -663,7 +661,7 @@ toggleBtn.MouseButton1Click:Connect(function()
     toggleBtn.Text = menuVisible and "☰" or "⋮"
 end)
 
--- Обновление дисплея при появлении персонажа
+-- Обновление дисплея
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -673,4 +671,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: добавлена кнопка‑тоггл для скрытия/показа меню")
+print("Haxxx Gui V1: кнопка‑тоггл работает, меню открывается/закрывается")
