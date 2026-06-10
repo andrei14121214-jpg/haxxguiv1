@@ -1,4 +1,4 @@
--- haxxguiv1: с кнопкой INVIS (полная невидимость, включая лицо)
+-- haxxguiv1: кнопка INVIS (полная невидимость) + ESP + HUBS
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,7 +7,7 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- КОНТЕЙНЕР (основное окно + кнопка HUBS склеены)
+-- КОНТЕЙНЕР (основное окно + кнопка HUBS)
 local container = Instance.new("Frame")
 container.Size = UDim2.new(0, 345, 0, 170)
 container.Position = UDim2.new(0.5, -172.5, 0.5, -85)
@@ -108,24 +108,23 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- === Кнопка ESP ===
+-- === КНОПКИ ESP И INVIS В ОДНОЙ СТРОКЕ ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 70, 0, 25)
+espBtn.Size = UDim2.new(0, 65, 0, 25)
 espBtn.Position = UDim2.new(0, 10, 0, 100)
 espBtn.Text = "ESP OFF"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
-espBtn.TextSize = 14
+espBtn.TextSize = 12
 espBtn.Parent = main
 
--- === НОВАЯ КНОПКА INVIS (полная невидимость) ===
 local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 70, 0, 25)
-invisBtn.Position = UDim2.new(0, 90, 0, 100)
+invisBtn.Size = UDim2.new(0, 65, 0, 25)
+invisBtn.Position = UDim2.new(0, 85, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
-invisBtn.TextSize = 14
+invisBtn.TextSize = 12
 invisBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
@@ -169,45 +168,31 @@ iyBtn.TextColor3 = Color3.new(1,1,1)
 iyBtn.TextSize = 14
 iyBtn.Parent = hubframe
 
-local desc = Instance.new("TextLabel")
-desc.Size = UDim2.new(1, 0, 0, 40)
-desc.Position = UDim2.new(0, 0, 0, 80)
-desc.BackgroundTransparency = 1
-desc.Text = "Запускает Infinite Yield"
-desc.TextColor3 = Color3.new(1,1,1)
-desc.TextSize = 11
-desc.TextWrapped = true
-desc.Parent = hubframe
-
 iyBtn.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
     end)
 end)
 
--- === ФУНКЦИЯ НЕВИДИМОСТИ (скрывает всё: лицо, одежду, аксессуары, тень) ===
+-- === ФУНКЦИЯ НЕВИДИМОСТИ ===
 local invisible = false
-local originalMaterials = {}  -- для сохранения материалов
+local originalMaterials = {}
 local originalTransparencies = {}
 
 local function setInvisible(state)
     local char = player.Character
     if not char then return end
-    
     for _, part in ipairs(char:GetDescendants()) do
         if part:IsA("BasePart") then
             if state then
-                -- Сохраняем оригинальные значения (только если ещё не сохранены)
                 if originalMaterials[part] == nil then
                     originalMaterials[part] = part.Material
                     originalTransparencies[part] = part.Transparency
                 end
-                -- Делаем полностью прозрачным и отключаем тень
                 part.Material = Enum.Material.ForceField
                 part.Transparency = 1
                 part.CastShadow = false
             else
-                -- Восстанавливаем
                 if originalMaterials[part] then
                     part.Material = originalMaterials[part]
                     part.Transparency = originalTransparencies[part]
@@ -218,25 +203,18 @@ local function setInvisible(state)
                 part.CastShadow = true
             end
         elseif part:IsA("Decal") or part:IsA("Texture") then
-            -- Скрываем/показываем декали (лицо, одежда)
             part.Visible = not state
         end
     end
-    
-    -- Дополнительно скрываем аксессуары (Handle и Attachment)
     for _, acc in ipairs(char:GetChildren()) do
         if acc:IsA("Accessory") or acc:IsA("Hat") or acc:IsA("Clothing") then
             acc.Visible = not state
-            if state then
-                -- Убираем тень от аксессуаров
-                local handle = acc:FindFirstChild("Handle")
-                if handle and handle:IsA("BasePart") then
+            local handle = acc:FindFirstChild("Handle")
+            if handle and handle:IsA("BasePart") then
+                if state then
                     handle.CastShadow = false
                     handle.Transparency = 1
-                end
-            else
-                local handle = acc:FindFirstChild("Handle")
-                if handle and handle:IsA("BasePart") then
+                else
                     handle.CastShadow = true
                     handle.Transparency = 0
                 end
@@ -245,22 +223,19 @@ local function setInvisible(state)
     end
 end
 
--- Кнопка INVIS
 invisBtn.MouseButton1Click:Connect(function()
     invisible = not invisible
     invisBtn.Text = invisible and "VISIBLE" or "INVIS"
     setInvisible(invisible)
 end)
 
--- При респавне персонажа – обнуляем состояние, чтобы видимость сбросилась (игрок появляется видимым)
+-- Сброс при респавне
 player.CharacterAdded:Connect(function(char)
     invisible = false
     invisBtn.Text = "INVIS"
     originalMaterials = {}
     originalTransparencies = {}
-    -- Небольшая задержка, чтобы персонаж полностью загрузился
     task.wait(0.5)
-    -- На всякий случай возвращаем видимость
     for _, part in ipairs(char:GetDescendants()) do
         if part:IsA("BasePart") then
             part.Transparency = 0
@@ -282,7 +257,7 @@ player.CharacterAdded:Connect(function(char)
     end
 end)
 
--- === ОСТАЛЬНЫЕ ФУНКЦИИ (speed, jump, fly, noclip, ESP) ===
+-- ========== ЛОГИКА (speed, jump, fly, noclip, esp) ==========
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed()
     local c = player.Character
@@ -485,7 +460,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- Функция обновления позиции hubframe
+-- === Функции перемещения контейнера и окна HUBS ===
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -493,7 +468,6 @@ local function updateHubframePosition()
     hubframe.Position = UDim2.new(0, contPos.X + contSize.X + 10, 0, contPos.Y)
 end
 
--- Перетаскивание контейнера
 local dragContainer = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -517,7 +491,6 @@ title.InputChanged:Connect(function(input)
     end
 end)
 
--- Показать/скрыть окно HUBS
 local hubsOpen = false
 hubsBtn.MouseButton1Click:Connect(function()
     hubsOpen = not hubsOpen
@@ -526,7 +499,7 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
--- Обновление дисплея при появлении персонажа
+-- Обновление отображения при появлении персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -536,4 +509,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: добавлена кнопка INVIS (полная невидимость).")
+print("Haxxx Gui V1: кнопка INVIS работает (полная невидимость).")
