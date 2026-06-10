@@ -1,4 +1,4 @@
--- haxxguiv1: нож 4510966153 (исправленная выдача)
+-- haxxguiv1: регулировка FOV (+/-), убрана кнопка KNIFE
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -36,7 +36,7 @@ title.Parent = main
 
 -- === Строка скорости ===
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0, 100, 0, 25)
+speedLabel.Size = UDim2.new(0, 80, 0, 25)
 speedLabel.Position = UDim2.new(0, 10, 0, 30)
 speedLabel.BackgroundColor3 = Color3.new(0,0,0)
 speedLabel.Text = "speed: 16"
@@ -46,7 +46,7 @@ speedLabel.Parent = main
 
 local speedMinus = Instance.new("TextButton")
 speedMinus.Size = UDim2.new(0, 25, 0, 25)
-speedMinus.Position = UDim2.new(0, 115, 0, 30)
+speedMinus.Position = UDim2.new(0, 95, 0, 30)
 speedMinus.Text = "-"
 speedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedMinus.TextColor3 = Color3.new(0,0,0)
@@ -55,7 +55,7 @@ speedMinus.Parent = main
 
 local speedPlus = Instance.new("TextButton")
 speedPlus.Size = UDim2.new(0, 25, 0, 25)
-speedPlus.Position = UDim2.new(0, 145, 0, 30)
+speedPlus.Position = UDim2.new(0, 125, 0, 30)
 speedPlus.Text = "+"
 speedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 speedPlus.TextColor3 = Color3.new(0,0,0)
@@ -64,7 +64,7 @@ speedPlus.Parent = main
 
 local flyBtn = Instance.new("TextButton")
 flyBtn.Size = UDim2.new(0, 55, 0, 25)
-flyBtn.Position = UDim2.new(0, 190, 0, 30)
+flyBtn.Position = UDim2.new(0, 170, 0, 30)
 flyBtn.Text = "FLY"
 flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
@@ -73,7 +73,7 @@ flyBtn.Parent = main
 
 -- === Строка прыжка ===
 local jpLabel = Instance.new("TextLabel")
-jpLabel.Size = UDim2.new(0, 100, 0, 25)
+jpLabel.Size = UDim2.new(0, 80, 0, 25)
 jpLabel.Position = UDim2.new(0, 10, 0, 65)
 jpLabel.BackgroundColor3 = Color3.new(0,0,0)
 jpLabel.Text = "jp: 7.2"
@@ -83,7 +83,7 @@ jpLabel.Parent = main
 
 local jumpMinus = Instance.new("TextButton")
 jumpMinus.Size = UDim2.new(0, 25, 0, 25)
-jumpMinus.Position = UDim2.new(0, 115, 0, 65)
+jumpMinus.Position = UDim2.new(0, 95, 0, 65)
 jumpMinus.Text = "-"
 jumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpMinus.TextColor3 = Color3.new(0,0,0)
@@ -92,7 +92,7 @@ jumpMinus.Parent = main
 
 local jumpPlus = Instance.new("TextButton")
 jumpPlus.Size = UDim2.new(0, 25, 0, 25)
-jumpPlus.Position = UDim2.new(0, 145, 0, 65)
+jumpPlus.Position = UDim2.new(0, 125, 0, 65)
 jumpPlus.Text = "+"
 jumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
 jumpPlus.TextColor3 = Color3.new(0,0,0)
@@ -101,40 +101,50 @@ jumpPlus.Parent = main
 
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Size = UDim2.new(0, 70, 0, 25)
-noclipBtn.Position = UDim2.new(0, 190, 0, 65)
+noclipBtn.Position = UDim2.new(0, 170, 0, 65)
 noclipBtn.Text = "NOCLIP"
 noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- === КНОПКИ ESP, INVIS, KNIFE ===
+-- === Строка FOV ===
+local fovLabel = Instance.new("TextLabel")
+fovLabel.Name = "fovinfo"
+fovLabel.Size = UDim2.new(0, 80, 0, 25)
+fovLabel.Position = UDim2.new(0, 10, 0, 100)
+fovLabel.BackgroundColor3 = Color3.new(0,0,0)
+fovLabel.Text = "fov: 70"
+fovLabel.TextColor3 = Color3.new(1,1,1)
+fovLabel.TextSize = 14
+fovLabel.Parent = main
+
+local fovMinus = Instance.new("TextButton")
+fovMinus.Size = UDim2.new(0, 25, 0, 25)
+fovMinus.Position = UDim2.new(0, 95, 0, 100)
+fovMinus.Text = "-"
+fovMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
+fovMinus.TextColor3 = Color3.new(0,0,0)
+fovMinus.TextSize = 16
+fovMinus.Parent = main
+
+local fovPlus = Instance.new("TextButton")
+fovPlus.Size = UDim2.new(0, 25, 0, 25)
+fovPlus.Position = UDim2.new(0, 125, 0, 100)
+fovPlus.Text = "+"
+fovPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
+fovPlus.TextColor3 = Color3.new(0,0,0)
+fovPlus.TextSize = 16
+fovPlus.Parent = main
+
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 70, 0, 25)
-espBtn.Position = UDim2.new(0, 10, 0, 100)
+espBtn.Position = UDim2.new(0, 170, 0, 100)
 espBtn.Text = "ESP OFF"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 12
 espBtn.Parent = main
-
-local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 70, 0, 25)
-invisBtn.Position = UDim2.new(0, 90, 0, 100)
-invisBtn.Text = "INVIS"
-invisBtn.BackgroundColor3 = Color3.new(0,0,0)
-invisBtn.TextColor3 = Color3.new(1,1,1)
-invisBtn.TextSize = 12
-invisBtn.Parent = main
-
-local knifeBtn = Instance.new("TextButton")
-knifeBtn.Size = UDim2.new(0, 70, 0, 25)
-knifeBtn.Position = UDim2.new(0, 170, 0, 100)
-knifeBtn.Text = "KNIFE"
-knifeBtn.BackgroundColor3 = Color3.new(0,0,0)
-knifeBtn.TextColor3 = Color3.new(1,1,1)
-knifeBtn.TextSize = 12
-knifeBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
 local hubsBtn = Instance.new("TextButton")
@@ -183,262 +193,7 @@ iyBtn.MouseButton1Click:Connect(function()
     end)
 end)
 
--- === ФУНКЦИЯ НЕВИДИМОСТИ ===
-local invisible = false
-local originalMaterials = {}
-local originalTransparencies = {}
-
-local function setInvisible(state)
-    local char = player.Character
-    if not char then return end
-    for _, part in ipairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then
-            if state then
-                if originalMaterials[part] == nil then
-                    originalMaterials[part] = part.Material
-                    originalTransparencies[part] = part.Transparency
-                end
-                part.Material = Enum.Material.ForceField
-                part.Transparency = 1
-                part.CastShadow = false
-            else
-                if originalMaterials[part] then
-                    part.Material = originalMaterials[part]
-                    part.Transparency = originalTransparencies[part]
-                else
-                    part.Material = Enum.Material.Plastic
-                    part.Transparency = 0
-                end
-                part.CastShadow = true
-            end
-        elseif part:IsA("Decal") or part:IsA("Texture") then
-            part.Visible = not state
-        end
-    end
-    for _, acc in ipairs(char:GetChildren()) do
-        if acc:IsA("Accessory") or acc:IsA("Hat") or acc:IsA("Clothing") then
-            acc.Visible = not state
-            local handle = acc:FindFirstChild("Handle")
-            if handle and handle:IsA("BasePart") then
-                if state then
-                    handle.CastShadow = false
-                    handle.Transparency = 1
-                else
-                    handle.CastShadow = true
-                    handle.Transparency = 0
-                end
-            end
-        end
-    end
-end
-
-invisBtn.MouseButton1Click:Connect(function()
-    invisible = not invisible
-    invisBtn.Text = invisible and "VISIBLE" or "INVIS"
-    setInvisible(invisible)
-end)
-
--- === НОЖ ПО ID 4510966153 (ИСПРАВЛЕННАЯ ВЫДАЧА) ===
-local knife = nil
-
-local function createKnifeFromModel()
-    local success, result = pcall(function()
-        return game:GetService("InsertService"):LoadAsset(4510966153)
-    end)
-    
-    if not success or not result then
-        warn("Ошибка загрузки модели, создаю простой нож")
-        return createSimpleKnife()
-    end
-    
-    -- Ищем Tool в загруженной модели
-    local tool = nil
-    for _, child in ipairs(result:GetChildren()) do
-        if child:IsA("Tool") then
-            tool = child
-            break
-        end
-    end
-    
-    if not tool then
-        -- Создаём свой Tool и переносим Handle
-        tool = Instance.new("Tool")
-        tool.Name = "Knife"
-        tool.RequiresHandle = true
-        tool.CanBeDropped = false
-        
-        local handlePart = nil
-        for _, child in ipairs(result:GetDescendants()) do
-            if (child:IsA("MeshPart") or child:IsA("Part")) and child.Name:lower():find("handle") then
-                handlePart = child
-                break
-            end
-        end
-        if not handlePart then
-            for _, child in ipairs(result:GetDescendants()) do
-                if child:IsA("MeshPart") or child:IsA("Part") then
-                    handlePart = child
-                    break
-                end
-            end
-        end
-        
-        if handlePart then
-            handlePart.Parent = tool
-            tool.Handle = handlePart
-        else
-            -- Если нет подходящей части, создаём примитив
-            local handle = Instance.new("Part")
-            handle.Name = "Handle"
-            handle.Size = Vector3.new(0.5, 0.2, 1)
-            handle.CanCollide = false
-            handle.Parent = tool
-            tool.Handle = handle
-        end
-    end
-    
-    -- Удаляем временный контейнер, если он не является самим инструментом
-    if result ~= tool and result.Parent ~= tool then
-        result:Destroy()
-    end
-    
-    return tool
-end
-
-local function createSimpleKnife()
-    -- Резервный нож из частей
-    local tool = Instance.new("Tool")
-    tool.Name = "Knife"
-    tool.RequiresHandle = true
-    tool.CanBeDropped = false
-    tool.ToolTip = "Боевой нож"
-    
-    local handle = Instance.new("Part")
-    handle.Name = "Handle"
-    handle.Size = Vector3.new(0.5, 0.2, 1.2)
-    handle.Material = Enum.Material.Metal
-    handle.Color = Color3.fromRGB(192, 192, 192)
-    handle.CanCollide = false
-    handle.Parent = tool
-    
-    local blade = Instance.new("Part")
-    blade.Name = "Blade"
-    blade.Size = Vector3.new(0.4, 0.1, 1.6)
-    blade.Position = Vector3.new(0, 0, 1.1)
-    blade.Material = Enum.Material.Metal
-    blade.Color = Color3.fromRGB(220, 220, 255)
-    blade.CanCollide = false
-    blade.Parent = handle
-    
-    tool.Handle = handle
-    return tool
-end
-
-local function giveKnife()
-    if knife and knife.Parent then
-        knife:Destroy()
-    end
-    
-    knife = createKnifeFromModel()
-    
-    if not knife then
-        warn("Не удалось создать нож")
-        return
-    end
-    
-    -- Добавляем анимацию и урон
-    local debounce = false
-    local connection
-    connection = knife.Activated:Connect(function()
-        if debounce then return end
-        debounce = true
-        
-        local char = player.Character
-        local handle = knife:FindFirstChild("Handle")
-        if char and handle then
-            -- Анимация взмаха
-            local originalCF = handle.CFrame
-            handle.CFrame = handle.CFrame * CFrame.Angles(math.rad(-40), math.rad(30), math.rad(-50))
-            task.wait(0.05)
-            handle.CFrame = originalCF
-            
-            -- Эффект свечения
-            local glow = Instance.new("SelectionBox")
-            glow.Adornee = handle
-            glow.Color3 = Color3.fromRGB(255, 0, 0)
-            glow.LineThickness = 0.1
-            glow.Transparency = 0.5
-            glow.Parent = handle
-            task.wait(0.1)
-            glow:Destroy()
-            
-            -- Урон
-            for _, plr in ipairs(game.Players:GetPlayers()) do
-                if plr ~= player and plr.Character then
-                    local targetChar = plr.Character
-                    local hrp = targetChar:FindFirstChild("HumanoidRootPart")
-                    if hrp and (hrp.Position - handle.Position).Magnitude < 5 then
-                        local humanoid = targetChar:FindFirstChild("Humanoid")
-                        if humanoid then
-                            humanoid:TakeDamage(25)
-                            local blood = Instance.new("ParticleEmitter")
-                            blood.Rate = 100
-                            blood.Lifetime = NumberRange.new(0.3)
-                            blood.SpreadAngle = Vector2.new(360, 360)
-                            blood.Speed = NumberRange.new(3)
-                            blood.Parent = handle
-                            task.wait(0.2)
-                            blood:Destroy()
-                        end
-                    end
-                end
-            end
-        end
-        
-        task.wait(0.4)
-        debounce = false
-    end)
-    
-    -- Сохраняем связь для очистки
-    if not knife._connections then knife._connections = {} end
-    table.insert(knife._connections, connection)
-    
-    knife.Parent = player.Backpack
-    knifeBtn.Text = "KNIFE OUT"
-end
-
-local function removeKnife()
-    if knife then
-        if knife._connections then
-            for _, conn in ipairs(knife._connections) do
-                pcall(function() conn:Disconnect() end)
-            end
-        end
-        knife:Destroy()
-        knife = nil
-    end
-    knifeBtn.Text = "KNIFE"
-end
-
-knifeBtn.MouseButton1Click:Connect(function()
-    if not knife or knife.Parent == nil then
-        giveKnife()
-    else
-        removeKnife()
-    end
-end)
-
-player.CharacterAdded:Connect(function()
-    if knife then
-        removeKnife()
-    end
-    invisible = false
-    invisBtn.Text = "INVIS"
-    originalMaterials = {}
-    originalTransparencies = {}
-end)
-
--- ========== ЛОГИКА (speed, jump, fly, noclip, esp) ==========
+-- === ЛОГИКА СКОРОСТИ ===
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
 local function getSpeed()
     local c = player.Character
@@ -460,6 +215,7 @@ end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
+-- === ЛОГИКА ПРЫЖКА ===
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
 local function getJump()
     local c = player.Character
@@ -482,7 +238,22 @@ end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- FLY
+-- === ЛОГИКА FOV ===
+local camera = workspace.CurrentCamera
+local function updateFOV(value)
+    value = math.clamp(value, 50, 120)
+    camera.FieldOfView = value
+    fovLabel.Text = "fov: " .. math.floor(value)
+end
+
+fovPlus.MouseButton1Click:Connect(function()
+    updateFOV(camera.FieldOfView + 5)
+end)
+fovMinus.MouseButton1Click:Connect(function()
+    updateFOV(camera.FieldOfView - 5)
+end)
+
+-- === FLY ===
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -549,7 +320,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- NOCLIP
+-- === NOCLIP ===
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -589,7 +360,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ESP
+-- === ESP ===
 local espActive = false
 local espHighlights = {}
 local espConn = nil
@@ -641,7 +412,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === Функции перемещения ===
+-- === Функции перемещения контейнера и окна HUBS ===
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -690,4 +461,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: нож 4510966153 (загрузка через InsertService)")
+print("Haxxx Gui V1: FOV регулировка (+/-) добавлена, кнопка KNIFE удалена.")
