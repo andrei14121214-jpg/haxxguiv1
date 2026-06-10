@@ -1,4 +1,4 @@
--- haxxguiv1 УПРОЩЁННАЯ (без UIStroke, без TextScaled, надёжные размеры)
+-- haxxguiv1 FIXED (абсолютные пиксельные размеры и координаты)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,13 +9,13 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
 main.Name = "main"
-main.Position = UDim2.new(0.1, 0, 0.1, 0)
-main.Size = UDim2.new(0, 300, 0, 200)  -- фиксированный размер
+main.Position = UDim2.new(0, 100, 0, 100)  -- левый верхний угол (x=100, y=100)
+main.Size = UDim2.new(0, 300, 0, 200)      -- ширина 300, высота 200
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.6
 main.Parent = gui
 
--- Заголовок
+-- Заголовок "Haxxx Gui V1"
 local title = Instance.new("TextLabel")
 title.Text = "Haxxx Gui V1"
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -25,7 +25,7 @@ title.TextColor3 = Color3.new(1,1,1)
 title.TextSize = 14
 title.Parent = main
 
--- speedinfo
+-- speedinfo (метка скорости)
 local speedInfo = Instance.new("TextLabel")
 speedInfo.Name = "speedinfo"
 speedInfo.Text = "speed: 16"
@@ -36,8 +36,9 @@ speedInfo.TextColor3 = Color3.new(1,1,1)
 speedInfo.TextSize = 14
 speedInfo.Parent = main
 
--- Кнопка "-"
+-- Кнопка "-" скорости
 local btnSpeedMinus = Instance.new("TextButton")
+btnSpeedMinus.Name = "-"
 btnSpeedMinus.Text = "-"
 btnSpeedMinus.Position = UDim2.new(0, 5, 0, 30)
 btnSpeedMinus.Size = UDim2.new(0, 20, 0, 20)
@@ -46,8 +47,9 @@ btnSpeedMinus.TextColor3 = Color3.new(0,0,0)
 btnSpeedMinus.TextSize = 14
 btnSpeedMinus.Parent = main
 
--- Кнопка "+"
+-- Кнопка "+" скорости
 local btnSpeedPlus = Instance.new("TextButton")
+btnSpeedPlus.Name = "+"
 btnSpeedPlus.Text = "+"
 btnSpeedPlus.Position = UDim2.new(0, 115, 0, 30)
 btnSpeedPlus.Size = UDim2.new(0, 20, 0, 20)
@@ -56,7 +58,7 @@ btnSpeedPlus.TextColor3 = Color3.new(0,0,0)
 btnSpeedPlus.TextSize = 14
 btnSpeedPlus.Parent = main
 
--- jpinfo
+-- jpinfo (метка прыжка)
 local jpInfo = Instance.new("TextLabel")
 jpInfo.Name = "jpinfo"
 jpInfo.Text = "jp: 7.2"
@@ -67,8 +69,9 @@ jpInfo.TextColor3 = Color3.new(1,1,1)
 jpInfo.TextSize = 14
 jpInfo.Parent = main
 
--- Кнопка "-2"
+-- Кнопка "-2" прыжка
 local btnJumpMinus = Instance.new("TextButton")
+btnJumpMinus.Name = "-2"
 btnJumpMinus.Text = "-"
 btnJumpMinus.Position = UDim2.new(0, 5, 0, 60)
 btnJumpMinus.Size = UDim2.new(0, 20, 0, 20)
@@ -77,8 +80,9 @@ btnJumpMinus.TextColor3 = Color3.new(0,0,0)
 btnJumpMinus.TextSize = 14
 btnJumpMinus.Parent = main
 
--- Кнопка "+2"
+-- Кнопка "+2" прыжка
 local btnJumpPlus = Instance.new("TextButton")
+btnJumpPlus.Name = "+2"
 btnJumpPlus.Text = "+"
 btnJumpPlus.Position = UDim2.new(0, 115, 0, 60)
 btnJumpPlus.Size = UDim2.new(0, 20, 0, 20)
@@ -91,8 +95,8 @@ btnJumpPlus.Parent = main
 local flyBtn = Instance.new("TextButton")
 flyBtn.Name = "Flybttn"
 flyBtn.Text = "FLY"
-flyBtn.Position = UDim2.new(0, 150, 0, 30)
-flyBtn.Size = UDim2.new(0, 60, 0, 25)
+flyBtn.Position = UDim2.new(0, 160, 0, 30)
+flyBtn.Size = UDim2.new(0, 80, 0, 30)
 flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
 flyBtn.TextSize = 14
@@ -102,23 +106,58 @@ flyBtn.Parent = main
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Name = "noclip"
 noclipBtn.Text = "NOCLIP"
-noclipBtn.Position = UDim2.new(0, 150, 0, 60)
-noclipBtn.Size = UDim2.new(0, 60, 0, 25)
+noclipBtn.Position = UDim2.new(0, 160, 0, 60)
+noclipBtn.Size = UDim2.new(0, 80, 0, 30)
 noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- ===== ЛОГИКА (та же, что и раньше) =====
-local function updateSpeed(v) speedInfo.Text = "speed: " .. math.floor(v) end
-local function getSpeed() local c = player.Character if not c then return 16 end local h = c:FindFirstChild("Humanoid") return h and h.WalkSpeed or 16 end
-local function setSpeed(v) v = math.clamp(v, 0, 500) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.WalkSpeed = v updateSpeed(v) end end end
+-- ========== ЛОГИКА ==========
+local function updateSpeed(v)
+    speedInfo.Text = "speed: " .. math.floor(v)
+end
+local function getSpeed()
+    local c = player.Character
+    if not c then return 16 end
+    local h = c:FindFirstChild("Humanoid")
+    return h and h.WalkSpeed or 16
+end
+local function setSpeed(v)
+    v = math.clamp(v, 0, 500)
+    local c = player.Character
+    if c then
+        local h = c:FindFirstChild("Humanoid")
+        if h then
+            h.WalkSpeed = v
+            updateSpeed(v)
+        end
+    end
+end
 btnSpeedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 btnSpeedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
-local function updateJump(v) jpInfo.Text = "jp: " .. string.format("%.1f", v) end
-local function getJump() local c = player.Character if not c then return 7.2 end local h = c:FindFirstChild("Humanoid") return h and h.JumpPower or 7.2 end
-local function setJump(v) v = math.clamp(v, 7.2, 200) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.UseJumpPower = true h.JumpPower = v updateJump(v) end end end
+local function updateJump(v)
+    jpInfo.Text = "jp: " .. string.format("%.1f", v)
+end
+local function getJump()
+    local c = player.Character
+    if not c then return 7.2 end
+    local h = c:FindFirstChild("Humanoid")
+    return h and h.JumpPower or 7.2
+end
+local function setJump(v)
+    v = math.clamp(v, 7.2, 200)
+    local c = player.Character
+    if c then
+        local h = c:FindFirstChild("Humanoid")
+        if h then
+            h.UseJumpPower = true
+            h.JumpPower = v
+            updateJump(v)
+        end
+    end
+end
 btnJumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 2) end)
 btnJumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 2) end)
 
@@ -134,7 +173,10 @@ local function startFly()
     local hrp = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChildOfClass("Humanoid")
     if not hrp then return end
-    if hum then hum.PlatformStand = true hum:ChangeState(Enum.HumanoidStateType.Freefall) end
+    if hum then
+        hum.PlatformStand = true
+        hum:ChangeState(Enum.HumanoidStateType.Freefall)
+    end
     bodyGyro = Instance.new("BodyGyro")
     bodyGyro.MaxTorque = Vector3.new(9e9,9e9,9e9)
     bodyGyro.P = 9e4
@@ -167,7 +209,10 @@ local function stopFly()
     local char = player.Character
     if char then
         local hum = char:FindFirstChildOfClass("Humanoid")
-        if hum then hum.PlatformStand = false hum:ChangeState(Enum.HumanoidStateType.Landed) end
+        if hum then
+            hum.PlatformStand = false
+            hum:ChangeState(Enum.HumanoidStateType.Landed)
+        end
     end
 end
 flyBtn.MouseButton1Click:Connect(function()
@@ -176,7 +221,11 @@ flyBtn.MouseButton1Click:Connect(function()
     if flying then startFly() else stopFly() end
 end)
 player.CharacterAdded:Connect(function()
-    if flying then stopFly() flying = false flyBtn.Text = "FLY" end
+    if flying then
+        stopFly()
+        flying = false
+        flyBtn.Text = "FLY"
+    end
 end)
 
 -- NOCLIP
@@ -187,7 +236,9 @@ local function noclipLoop()
     local char = player.Character
     if not char then return end
     for _, part in ipairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then part.CanCollide = false end
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+        end
     end
 end
 noclipBtn.MouseButton1Click:Connect(function()
@@ -223,4 +274,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Упрощённый GUI загружен. Кнопки и функции работают.")
+print("GUI загружен с абсолютными координатами. Кнопки должны быть видны и активны.")
