@@ -1,4 +1,4 @@
--- haxxguiv1: AIM (авто-прицел) + ESP + INVIS
+-- haxxguiv1: в HUBS добавлен ScrollingFrame с системными скриптами
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -176,9 +176,9 @@ hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
 hubsBtn.TextColor3 = Color3.new(1,1,1)
 hubsBtn.Parent = container
 
--- === ОКНО HUBS ===
+-- === ОКНО HUBS С ScrollingFrame ===
 local hubframe = Instance.new("Frame")
-hubframe.Size = UDim2.new(0, 150, 0, 170)
+hubframe.Size = UDim2.new(0, 180, 0, 170)
 hubframe.Position = UDim2.new(0, container.Position.X.Offset + container.Size.X.Offset + 10, 0, container.Position.Y.Offset)
 hubframe.BackgroundColor3 = Color3.fromRGB(40,40,40)
 hubframe.BackgroundTransparency = 0.2
@@ -187,6 +187,7 @@ hubframe.Active = true
 hubframe.Draggable = true
 hubframe.Parent = gui
 
+-- Заголовок
 local hubTitle = Instance.new("TextLabel")
 hubTitle.Size = UDim2.new(1, 0, 0, 20)
 hubTitle.Position = UDim2.new(0, 0, 0, 0)
@@ -196,19 +197,113 @@ hubTitle.TextColor3 = Color3.new(1,1,1)
 hubTitle.TextSize = 14
 hubTitle.Parent = hubframe
 
-local iyBtn = Instance.new("TextButton")
-iyBtn.Size = UDim2.new(0, 130, 0, 30)
-iyBtn.Position = UDim2.new(0.5, -65, 0, 40)
-iyBtn.Text = "Infinity Yield"
-iyBtn.BackgroundColor3 = Color3.new(0,0,0)
-iyBtn.TextColor3 = Color3.new(1,1,1)
-iyBtn.TextSize = 14
-iyBtn.Parent = hubframe
+-- ScrollingFrame
+local scrollFrame = Instance.new("ScrollingFrame")
+scrollFrame.Size = UDim2.new(1, 0, 1, -20)
+scrollFrame.Position = UDim2.new(0, 0, 0, 20)
+scrollFrame.BackgroundTransparency = 1
+scrollFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollFrame.ScrollBarThickness = 8
+scrollFrame.Parent = hubframe
 
-iyBtn.MouseButton1Click:Connect(function()
-    pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
-    end)
+-- UIListLayout для автоматического расположения кнопок
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 5)
+listLayout.Parent = scrollFrame
+
+-- Функция создания кнопки в ScrollingFrame
+local function addHubButton(text, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -10, 0, 30)
+    btn.Text = text
+    btn.BackgroundColor3 = Color3.new(0,0,0)
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.TextSize = 12
+    btn.Parent = scrollFrame
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+-- Добавляем скрипты
+addHubButton("System Broken", function()
+    loadstring([[
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        if char then
+            for _, v in pairs(char:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.Material = Enum.Material.Neon
+                    v.Color = Color3.fromRGB(255, 0, 0)
+                end
+            end
+        end
+        print("System Broken activated")
+    ]])()
+end)
+
+addHubButton("Infinite Yield", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
+addHubButton("CMD-X", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/CMD-X/CMD-X/master/Source"))()
+end)
+
+addHubButton("Nameless Admin", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
+addHubButton("Dex Explorer", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/infyiff/backup/main/dex.lua"))()
+end)
+
+addHubButton("Remote Spy", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Remote-Spy-V2/main/Source.lua"))()
+end)
+
+addHubButton("FPS Unlocker", function()
+    setfpscap(999)
+    print("FPS cap removed")
+end)
+
+addHubButton("Chat Spammer", function()
+    local spamText = "Haxxx Gui V1"
+    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(spamText, "All")
+end)
+
+addHubButton("Speed Boost x5", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.WalkSpeed = char.Humanoid.WalkSpeed * 5
+    end
+end)
+
+addHubButton("Jump Boost x3", function()
+    local char = player.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.JumpPower = char.Humanoid.JumpPower * 3
+    end
+end)
+
+-- Обновляем CanvasSize после добавления кнопок
+local function updateCanvasSize()
+    local totalHeight = 0
+    for _, child in ipairs(scrollFrame:GetChildren()) do
+        if child:IsA("TextButton") then
+            totalHeight = totalHeight + child.Size.Y.Offset + listLayout.Padding.Offset
+        end
+    end
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+end
+
+-- Ждём добавления всех кнопок и обновляем
+task.wait(0.1)
+updateCanvasSize()
+
+-- Обновляем CanvasSize при изменении списка
+listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, listLayout.AbsoluteContentSize.Y)
 end)
 
 -- === ФУНКЦИЯ НЕВИДИМОСТИ ===
@@ -556,7 +651,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === Функции перемещения контейнера и окна HUBS ===
+-- === Функции перемещения ===
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -605,4 +700,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: ESP, AIM, INVIS, FOV, SPEED, JUMP, FLY, NOCLIP, HUBS")
+print("Haxxx Gui V1: в HUBS добавлен ScrollingFrame с 10 скриптами (System Broken и другие)")
