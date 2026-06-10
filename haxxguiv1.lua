@@ -1,4 +1,4 @@
--- haxxguiv1 с ESP, перетаскиванием, FLY, NOCLIP, SPEED, JUMP
+-- haxxguiv1 ТОЧНАЯ КОПИЯ СКРИНШОТА (speed: X+ / jp: X+ / FLY / NOCLIP / ESP / DRAG)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -8,119 +8,109 @@ gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
-main.Name = "main"
-main.Size = UDim2.new(0, 280, 0, 160)
-main.Position = UDim2.new(0.5, -140, 0.5, -80)
+main.Size = UDim2.new(0, 260, 0, 130)
+main.Position = UDim2.new(0.5, -130, 0.5, -65)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Active = true
 main.Draggable = true
 main.Parent = gui
 
--- заголовок (для перетаскивания)
+-- Заголовок
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 0)
-title.BackgroundColor3 = Color3.fromRGB(0,0,0)
+title.BackgroundColor3 = Color3.new(0,0,0)
 title.Text = "Haxxx Gui V1"
 title.TextColor3 = Color3.new(1,1,1)
 title.TextSize = 14
 title.Parent = main
 
--- ---- строка скорости ----
-local speedInfo = Instance.new("TextLabel")
-speedInfo.Name = "speedinfo"
-speedInfo.Size = UDim2.new(0, 80, 0, 25)
-speedInfo.Position = UDim2.new(0, 10, 0, 30)
-speedInfo.BackgroundColor3 = Color3.fromRGB(0,0,0)
-speedInfo.Text = "speed: 16"
-speedInfo.TextColor3 = Color3.new(1,1,1)
-speedInfo.TextSize = 14
-speedInfo.Parent = main
+-- === Строка скорости ===
+local speedLabel = Instance.new("TextLabel")
+speedLabel.Size = UDim2.new(0, 80, 0, 25)
+speedLabel.Position = UDim2.new(0, 10, 0, 30)
+speedLabel.BackgroundColor3 = Color3.new(0,0,0)
+speedLabel.Text = "speed: 16"
+speedLabel.TextColor3 = Color3.new(1,1,1)
+speedLabel.TextSize = 14
+speedLabel.Parent = main
 
-local minusSpeed = Instance.new("TextButton")
-minusSpeed.Name = "-"
-minusSpeed.Size = UDim2.new(0, 25, 0, 25)
-minusSpeed.Position = UDim2.new(0, 95, 0, 30)
-minusSpeed.Text = "-"
-minusSpeed.BackgroundColor3 = Color3.fromRGB(112,112,112)
-minusSpeed.TextColor3 = Color3.new(0,0,0)
-minusSpeed.TextSize = 16
-minusSpeed.Parent = main
+local speedMinus = Instance.new("TextButton")
+speedMinus.Size = UDim2.new(0, 25, 0, 25)
+speedMinus.Position = UDim2.new(0, 95, 0, 30)
+speedMinus.Text = "-"
+speedMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
+speedMinus.TextColor3 = Color3.new(0,0,0)
+speedMinus.TextSize = 16
+speedMinus.Parent = main
 
-local plusSpeed = Instance.new("TextButton")
-plusSpeed.Name = "+"
-plusSpeed.Size = UDim2.new(0, 25, 0, 25)
-plusSpeed.Position = UDim2.new(0, 125, 0, 30)
-plusSpeed.Text = "+"
-plusSpeed.BackgroundColor3 = Color3.fromRGB(112,112,112)
-plusSpeed.TextColor3 = Color3.new(0,0,0)
-plusSpeed.TextSize = 16
-plusSpeed.Parent = main
+local speedPlus = Instance.new("TextButton")
+speedPlus.Size = UDim2.new(0, 25, 0, 25)
+speedPlus.Position = UDim2.new(0, 125, 0, 30)
+speedPlus.Text = "+"
+speedPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
+speedPlus.TextColor3 = Color3.new(0,0,0)
+speedPlus.TextSize = 16
+speedPlus.Parent = main
 
 local flyBtn = Instance.new("TextButton")
-flyBtn.Name = "Flybttn"
 flyBtn.Size = UDim2.new(0, 55, 0, 25)
 flyBtn.Position = UDim2.new(0, 170, 0, 30)
 flyBtn.Text = "FLY"
-flyBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+flyBtn.BackgroundColor3 = Color3.new(0,0,0)
 flyBtn.TextColor3 = Color3.new(1,1,1)
 flyBtn.TextSize = 14
 flyBtn.Parent = main
 
--- ---- строка прыжка ----
-local jpInfo = Instance.new("TextLabel")
-jpInfo.Name = "jpinfo"
-jpInfo.Size = UDim2.new(0, 80, 0, 25)
-jpInfo.Position = UDim2.new(0, 10, 0, 65)
-jpInfo.BackgroundColor3 = Color3.fromRGB(0,0,0)
-jpInfo.Text = "jp: 7.2"
-jpInfo.TextColor3 = Color3.new(1,1,1)
-jpInfo.TextSize = 14
-jpInfo.Parent = main
+-- === Строка прыжка ===
+local jpLabel = Instance.new("TextLabel")
+jpLabel.Size = UDim2.new(0, 80, 0, 25)
+jpLabel.Position = UDim2.new(0, 10, 0, 65)
+jpLabel.BackgroundColor3 = Color3.new(0,0,0)
+jpLabel.Text = "jp: 7.2"
+jpLabel.TextColor3 = Color3.new(1,1,1)
+jpLabel.TextSize = 14
+jpLabel.Parent = main
 
-local minusJump = Instance.new("TextButton")
-minusJump.Name = "-2"
-minusJump.Size = UDim2.new(0, 25, 0, 25)
-minusJump.Position = UDim2.new(0, 95, 0, 65)
-minusJump.Text = "-2"
-minusJump.BackgroundColor3 = Color3.fromRGB(112,112,112)
-minusJump.TextColor3 = Color3.new(0,0,0)
-minusJump.TextSize = 14
-minusJump.Parent = main
+local jumpMinus = Instance.new("TextButton")
+jumpMinus.Size = UDim2.new(0, 25, 0, 25)
+jumpMinus.Position = UDim2.new(0, 95, 0, 65)
+jumpMinus.Text = "-2"
+jumpMinus.BackgroundColor3 = Color3.fromRGB(112,112,112)
+jumpMinus.TextColor3 = Color3.new(0,0,0)
+jumpMinus.TextSize = 14
+jumpMinus.Parent = main
 
-local plusJump = Instance.new("TextButton")
-plusJump.Name = "+2"
-plusJump.Size = UDim2.new(0, 25, 0, 25)
-plusJump.Position = UDim2.new(0, 125, 0, 65)
-plusJump.Text = "+2"
-plusJump.BackgroundColor3 = Color3.fromRGB(112,112,112)
-plusJump.TextColor3 = Color3.new(0,0,0)
-plusJump.TextSize = 14
-plusJump.Parent = main
+local jumpPlus = Instance.new("TextButton")
+jumpPlus.Size = UDim2.new(0, 25, 0, 25)
+jumpPlus.Position = UDim2.new(0, 125, 0, 65)
+jumpPlus.Text = "+2"
+jumpPlus.BackgroundColor3 = Color3.fromRGB(112,112,112)
+jumpPlus.TextColor3 = Color3.new(0,0,0)
+jumpPlus.TextSize = 14
+jumpPlus.Parent = main
 
 local noclipBtn = Instance.new("TextButton")
-noclipBtn.Name = "noclip"
 noclipBtn.Size = UDim2.new(0, 55, 0, 25)
 noclipBtn.Position = UDim2.new(0, 170, 0, 65)
 noclipBtn.Text = "NOCLIP"
-noclipBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+noclipBtn.BackgroundColor3 = Color3.new(0,0,0)
 noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- ---- кнопка ESP ----
+-- === Кнопка ESP ===
 local espBtn = Instance.new("TextButton")
-espBtn.Name = "ESP"
 espBtn.Size = UDim2.new(0, 100, 0, 25)
-espBtn.Position = UDim2.new(0.5, -50, 0, 105)
+espBtn.Position = UDim2.new(0.5, -50, 0, 100)
 espBtn.Text = "ESP OFF"
-espBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- ========== DRAG (перетаскивание за заголовок) ==========
+-- Drag
 local dragEnabled = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -142,9 +132,9 @@ title.InputChanged:Connect(function(input)
     end
 end)
 
--- ========== SPEED ==========
+-- ========== ЛОГИКА ==========
 local function updateSpeed(v)
-    speedInfo.Text = "speed: " .. math.floor(v)
+    speedLabel.Text = "speed: " .. math.floor(v)
 end
 local function getSpeed()
     local c = player.Character
@@ -163,12 +153,11 @@ local function setSpeed(v)
         end
     end
 end
-plusSpeed.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
-minusSpeed.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
+speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
+speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- ========== JUMP POWER ==========
 local function updateJump(v)
-    jpInfo.Text = "jp: " .. string.format("%.1f", v)
+    jpLabel.Text = "jp: " .. string.format("%.1f", v)
 end
 local function getJump()
     local c = player.Character
@@ -188,10 +177,10 @@ local function setJump(v)
         end
     end
 end
-plusJump.MouseButton1Click:Connect(function() setJump(getJump() + 2) end)
-minusJump.MouseButton1Click:Connect(function() setJump(getJump() - 2) end)
+jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 2) end)
+jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 2) end)
 
--- ========== FLY ==========
+-- FLY
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -258,7 +247,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== NOCLIP ==========
+-- NOCLIP
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -305,11 +294,10 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== ESP (Highlight для всех игроков, кроме себя) ==========
+-- ESP
 local espActive = false
 local espHighlights = {}
 local espConnection = nil
-
 local function updateESP()
     for _, plr in ipairs(game.Players:GetPlayers()) do
         if plr ~= player then
@@ -336,14 +324,12 @@ local function updateESP()
         end
     end
 end
-
 local function clearESP()
     for _, hl in pairs(espHighlights) do
         if hl then hl:Destroy() end
     end
     espHighlights = {}
 end
-
 local function toggleESP()
     espActive = not espActive
     espBtn.Text = espActive and "ESP ON" or "ESP OFF"
@@ -358,23 +344,18 @@ local function toggleESP()
         clearESP()
     end
 end
-
 espBtn.MouseButton1Click:Connect(toggleESP)
-
--- Очистка при удалении игрока
 game.Players.PlayerRemoving:Connect(function(plr)
     if espHighlights[plr] then
         espHighlights[plr]:Destroy()
         espHighlights[plr] = nil
     end
 end)
-
--- Обновление при добавлении игрока
 game.Players.PlayerAdded:Connect(function()
     if espActive then task.wait(0.5); updateESP() end
 end)
 
--- ========== ИНИЦИАЛИЗАЦИЯ ОТОБРАЖЕНИЯ ==========
+-- Обновление дисплея при появлении персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -384,4 +365,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1 с ESP загружен. Перетаскивание за заголовок.")
+print("Точная копия интерфейса загружена. Работает перетаскивание, скорость +1/-1, прыжок +2/-2, FLY, NOCLIP, ESP.")
