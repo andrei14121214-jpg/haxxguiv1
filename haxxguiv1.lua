@@ -1,4 +1,4 @@
--- haxxguiv1 с улучшенным ESP (игроки + NPC, HP, ники, цвета команд)
+-- haxxguiv1 с кнопкой HUBS и выдвижным фреймом (hubframe)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -8,8 +8,8 @@ gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 320, 0, 140)
-main.Position = UDim2.new(0.5, -160, 0.5, -70)
+main.Size = UDim2.new(0, 320, 0, 170)  -- увеличил высоту, чтобы поместить кнопку HUBS
+main.Position = UDim2.new(0.5, -160, 0.5, -85)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Active = true
@@ -102,35 +102,86 @@ noclipBtn.Parent = main
 
 -- === Кнопка ESP ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 120, 0, 25)
-espBtn.Position = UDim2.new(0.5, -60, 0, 105)
+espBtn.Size = UDim2.new(0, 100, 0, 25)
+espBtn.Position = UDim2.new(0, 10, 0, 100)
 espBtn.Text = "ESP OFF"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
 espBtn.TextSize = 14
 espBtn.Parent = main
 
--- Drag (перетаскивание)
-local dragEnabled = false
-local dragStart, startPos
-title.InputBegan:Connect(function(input)
+-- === Новая кнопка HUBS ===
+local hubsBtn = Instance.new("TextButton")
+hubsBtn.Size = UDim2.new(0, 100, 0, 25)
+hubsBtn.Position = UDim2.new(0, 120, 0, 100)
+hubsBtn.Text = "HUBS"
+hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
+hubsBtn.TextColor3 = Color3.new(1,1,1)
+hubsBtn.TextSize = 14
+hubsBtn.Parent = main
+
+-- === Фрейм hubframe (скрыт по умолчанию) ===
+local hubframe = Instance.new("Frame")
+hubframe.Name = "hubframe"
+hubframe.Size = UDim2.new(0, 200, 0, 100)
+hubframe.Position = UDim2.new(0.5, -100, 0.5, -50)
+hubframe.BackgroundColor3 = Color3.fromRGB(40,40,40)
+hubframe.BackgroundTransparency = 0.2
+hubframe.Visible = false
+hubframe.Parent = gui  -- размещаем на том же ScreenGui, поверх main
+
+-- UIStroke для hubframe (чёрный, толщина 1)
+local hubStroke = Instance.new("UIStroke")
+hubStroke.Color = Color3.new(0,0,0)
+hubStroke.Thickness = 1
+hubStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+hubStroke.Parent = hubframe
+
+-- Текст "sur" (или "hubs") внутри hubframe
+local surLabel = Instance.new("TextLabel")
+surLabel.Name = "sur"
+surLabel.Size = UDim2.new(1, 0, 1, 0)
+surLabel.Position = UDim2.new(0, 0, 0, 0)
+surLabel.BackgroundTransparency = 1
+surLabel.Text = "hubs"
+surLabel.TextColor3 = Color3.new(1,1,1)
+surLabel.TextSize = 20
+surLabel.Font = Enum.Font.GothamBold
+surLabel.TextScaled = true
+surLabel.Parent = hubframe
+
+-- Перетаскивание hubframe (опционально, чтобы можно было двигать)
+local dragHubEnabled = false
+local dragHubStart, dragHubStartPos
+surLabel.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        dragEnabled = true
-        dragStart = input.Position
-        startPos = main.Position
+        dragHubEnabled = true
+        dragHubStart = input.Position
+        dragHubStartPos = hubframe.Position
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
-                dragEnabled = false
+                dragHubEnabled = false
             end
         end)
     end
 end)
-title.InputChanged:Connect(function(input)
-    if dragEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
-        local delta = input.Position - dragStart
-        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+surLabel.InputChanged:Connect(function(input)
+    if dragHubEnabled and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local delta = input.Position - dragHubStart
+        hubframe.Position = UDim2.new(dragHubStartPos.X.Scale, dragHubStartPos.X.Offset + delta.X, dragHubStartPos.Y.Scale, dragHubStartPos.Y.Offset + delta.Y)
     end
 end)
+
+-- Логика показа/скрытия hubframe по кнопке HUBS
+local hubsOpen = false
+hubsBtn.MouseButton1Click:Connect(function()
+    hubsOpen = not hubsOpen
+    hubframe.Visible = hubsOpen
+    hubsBtn.Text = hubsOpen and "HUBS ↑" or "HUBS"
+end)
+
+-- Остальные функции (speed, jump, fly, noclip, ESP) без изменений
+-- (копирую их из предыдущего стабильного скрипта, но можно оставить тот же код, что был ранее)
 
 -- ========== ЛОГИКА СКОРОСТИ ==========
 local function updateSpeed(v)
@@ -295,7 +346,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- ========== УЛУЧШЕННЫЙ ESP (игроки + NPC, HP, цвета команд) ==========
+-- ========== ESP (улучшенный, из предыдущей версии) ==========
 local Players = game:GetService("Players")
 local Teams = game:GetService("Teams")
 local espEnabled = false
@@ -560,4 +611,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1 загружен: скорость +1/-1, прыжок +1/-1, FLY, NOCLIP, улучшенный ESP (игроки + NPC, HP, цвета команд)")
+print("Haxxx Gui V1 загружен: добавлена кнопка HUBS с выдвижным фреймом (перетаскивается за текст 'hubs').")
