@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка MORPH (R6 + аксессуары, сброс при респавне)
+-- haxxguiv1: ИСПРАВЛЕННЫЙ MORPH (R6 + аксессуары/одежда)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -238,48 +238,70 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- === ФУНКЦИЯ MORPH (R6 + аксессуары) ===
+-- === ФУНКЦИЯ MORPH (РАБОЧАЯ) ===
 local morphed = false
-local morphAssets = {
-    "80220105414674",  -- ID аксессуара/одежды
+local addedItems = {}
+local morphIds = {
+    "80220105414674",
     "75925258547267",
     "118391977411765"
 }
-local addedItems = {}  -- для хранения добавленных объектов (чтобы удалить при сбросе)
+
+-- Функция загрузки предмета (универсальная)
+local function loadItem(id, character)
+    local success, result = pcall(function()
+        return game:GetService("MarketplaceService"):LoadAsset(id)
+    end)
+    if success and result then
+        local item = nil
+        -- Ищем среди потомков Accessory, Shirt, Pants
+        for _, child in ipairs(result:GetChildren()) do
+            if child:IsA("Accessory") or child:IsA("Shirt") or child:IsA("Pants") then
+                item = child
+                break
+            end
+        end
+        if item then
+            if item:IsA("Accessory") then
+                -- Аксессуар: прикрепляем к персонажу
+                item.Parent = character
+                local humanoid = character:FindFirstChild("Humanoid")
+                if humanoid then
+                    humanoid:AddAccessory(item)
+                end
+                table.insert(addedItems, item)
+            elseif item:IsA("Shirt") or item:IsA("Pants") then
+                -- Одежда: клонируем в Clothing
+                local clone = item:Clone()
+                clone.Parent = character
+                table.insert(addedItems, clone)
+            end
+        end
+        -- Удаляем временный контейнер
+        result:Destroy()
+    end
+end
 
 local function applyMorph()
     if morphed then return end
     
     local char = player.Character
-    if not char then return end
-    
-    -- 1. Меняем аватар на R6
-    if player.CharacterHumanoid then
-        local humanoid = char:FindFirstChild("Humanoid")
-        if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R6 then
-            humanoid.RigType = Enum.HumanoidRigType.R6
-        end
+    if not char then
+        warn("Персонаж не найден")
+        return
     end
     
-    -- 2. Добавляем аксессуары/одежду
-    local function addAsset(assetId)
-        local success, result = pcall(function()
-            return game:GetService("MarketplaceService"):LoadAsset(assetId, player)
-        end)
-        if success and result then
-            local asset = result:FindFirstChildWhichIsA("Accessory") or result:FindFirstChildWhichIsA("Shirt") or result:FindFirstChildWhichIsA("Pants") or result:FindFirstChildWhichIsA("Hat")
-            if asset then
-                asset.Parent = char
-                table.insert(addedItems, asset)
-            else
-                -- Если не нашли нужный объект, удаляем загруженный контейнер
-                result:Destroy()
-            end
-        end
+    -- 1. Меняем RigType на R6 (стандартный способ)
+    local humanoid = char:FindFirstChild("Humanoid")
+    if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R6 then
+        humanoid.RigType = Enum.HumanoidRigType.R6
+        -- Небольшая задержка для применения
+        task.wait(0.2)
     end
     
-    for _, id in ipairs(morphAssets) do
-        addAsset(id)
+    -- 2. Загружаем и применяем предметы
+    for _, id in ipairs(morphIds) do
+        loadItem(id, char)
     end
     
     morphed = true
@@ -289,17 +311,17 @@ end
 local function resetMorph()
     if not morphed then return end
     
-    -- Удаляем добавленные аксессуары/одежду
-    for _, item in ipairs(addedItems) do
-        if item and item.Parent then
-            item:Destroy()
-        end
-    end
-    addedItems = {}
-    
-    -- Возвращаем R15 (стандарт в большинстве игр)
     local char = player.Character
     if char then
+        -- Удаляем добавленные предметы
+        for _, item in ipairs(addedItems) do
+            if item and item.Parent then
+                item:Destroy()
+            end
+        end
+        addedItems = {}
+        
+        -- Возвращаем R15 (стандарт)
         local humanoid = char:FindFirstChild("Humanoid")
         if humanoid then
             humanoid.RigType = Enum.HumanoidRigType.R15
@@ -319,7 +341,7 @@ morphBtn.MouseButton1Click:Connect(function()
 end)
 
 -- Сброс при респавне
-player.CharacterAdded:Connect(function()
+player.CharacterAdded:Connect(function(newChar)
     if morphed then
         resetMorph()
     end
@@ -327,6 +349,11 @@ player.CharacterAdded:Connect(function()
     invisBtn.Text = "INVIS"
     originalMaterials = {}
     originalTransparencies = {}
+    
+    -- Небольшая задержка, чтобы персонаж полностью загрузился
+    task.wait(1)
+    -- Если нужно автоматически применить морф после респавна - раскомментируй следующую строку
+    -- applyMorph()
 end)
 
 -- ========== ЛОГИКА (speed, jump, fly, noclip, esp) ==========
@@ -581,4 +608,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка MORPH (R6 + аксессуары, сброс при респавне)")
+print("Haxxx Gui V1: MORPH исправлен (универсальная загрузка).")
