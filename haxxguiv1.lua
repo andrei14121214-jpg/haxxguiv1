@@ -1,4 +1,4 @@
--- haxxguiv1 FIXED: ANTI-LAG + ANTI-AFK (все кнопки на месте)
+-- haxxguiv1: кнопка‑тоггл для открытия/закрытия меню
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -7,13 +7,26 @@ gui.Name = "haxxguiv1"
 gui.ResetOnSpawn = true
 gui.Parent = player:WaitForChild("PlayerGui")
 
--- КОНТЕЙНЕР
+-- ===== ПЛАВАЮЩАЯ КНОПКА-ТОГГЛ =====
+local toggleBtn = Instance.new("TextButton")
+toggleBtn.Name = "ToggleMenu"
+toggleBtn.Size = UDim2.new(0, 40, 0, 40)
+toggleBtn.Position = UDim2.new(1, -50, 0, 10)  -- правый верхний угол
+toggleBtn.Text = "☰"
+toggleBtn.TextSize = 24
+toggleBtn.TextColor3 = Color3.new(1,1,1)
+toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+toggleBtn.BackgroundTransparency = 0.3
+toggleBtn.BorderSizePixel = 0
+toggleBtn.Parent = gui
+
+-- ===== ОСНОВНОЙ КОНТЕЙНЕР =====
 local container = Instance.new("Frame")
+container.Name = "Container"
 container.Size = UDim2.new(0, 620, 0, 170)
 container.Position = UDim2.new(0.5, -310, 0.5, -85)
 container.BackgroundTransparency = 1
-container.Active = true
-container.Draggable = true
+container.Visible = true  -- изначально видимо
 container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
@@ -182,7 +195,7 @@ invisBtn.TextColor3 = Color3.new(1,1,1)
 invisBtn.TextSize = 11
 invisBtn.Parent = main
 
--- HUBS
+-- HUBS (вертикальная кнопка)
 local hubsBtn = Instance.new("TextButton")
 hubsBtn.Name = "HUBS"
 hubsBtn.Size = UDim2.new(0, 25, 0, 170)
@@ -194,7 +207,7 @@ hubsBtn.BackgroundColor3 = Color3.new(0,0,0)
 hubsBtn.TextColor3 = Color3.new(1,1,1)
 hubsBtn.Parent = container
 
--- hubframe
+-- hubframe (окно HUBS)
 local hubframe = Instance.new("Frame")
 hubframe.Size = UDim2.new(0, 180, 0, 170)
 hubframe.Position = UDim2.new(0, container.Position.X.Offset + container.Size.X.Offset + 10, 0, container.Position.Y.Offset)
@@ -284,113 +297,23 @@ listLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvas)
 task.wait(0.1)
 updateCanvas()
 
--- INVIS
-local invisible = false
-local originalMaterials = {}
-local originalTransparencies = {}
+-- ===== ФУНКЦИИ (SPEED, JUMP, FOV, FLY, NOCLIP, ESP, AIM, A-LAG, A-AFK, INVIS) =====
+-- (код функций – такой же, как в предыдущей стабильной версии)
 
-local function setInvisible(state)
-    local char = player.Character
-    if not char then return end
-    for _, part in ipairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then
-            if state then
-                if originalMaterials[part] == nil then
-                    originalMaterials[part] = part.Material
-                    originalTransparencies[part] = part.Transparency
-                end
-                part.Material = Enum.Material.ForceField
-                part.Transparency = 1
-                part.CastShadow = false
-            else
-                if originalMaterials[part] then
-                    part.Material = originalMaterials[part]
-                    part.Transparency = originalTransparencies[part]
-                else
-                    part.Material = Enum.Material.Plastic
-                    part.Transparency = 0
-                end
-                part.CastShadow = true
-            end
-        elseif part:IsA("Decal") or part:IsA("Texture") then
-            part.Visible = not state
-        end
-    end
-    for _, acc in ipairs(char:GetChildren()) do
-        if acc:IsA("Accessory") or acc:IsA("Hat") or acc:IsA("Clothing") then
-            acc.Visible = not state
-            local handle = acc:FindFirstChild("Handle")
-            if handle and handle:IsA("BasePart") then
-                if state then
-                    handle.CastShadow = false
-                    handle.Transparency = 1
-                else
-                    handle.CastShadow = true
-                    handle.Transparency = 0
-                end
-            end
-        end
-    end
-end
-
-invisBtn.MouseButton1Click:Connect(function()
-    invisible = not invisible
-    invisBtn.Text = invisible and "VISIBLE" or "INVIS"
-    setInvisible(invisible)
-end)
-
--- SPEED
 local function updateSpeed(v) speedLabel.Text = "speed: " .. math.floor(v) end
-local function getSpeed()
-    local c = player.Character
-    if not c then return 16 end
-    local h = c:FindFirstChild("Humanoid")
-    return h and h.WalkSpeed or 16
-end
-local function setSpeed(v)
-    v = math.clamp(v, 0, 500)
-    local c = player.Character
-    if c then
-        local h = c:FindFirstChild("Humanoid")
-        if h then
-            h.WalkSpeed = v
-            updateSpeed(v)
-        end
-    end
-end
+local function getSpeed() local c = player.Character if not c then return 16 end local h = c:FindFirstChild("Humanoid") return h and h.WalkSpeed or 16 end
+local function setSpeed(v) v = math.clamp(v, 0, 500) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.WalkSpeed = v updateSpeed(v) end end end
 speedPlus.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 speedMinus.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
--- JUMP
 local function updateJump(v) jpLabel.Text = "jp: " .. string.format("%.1f", v) end
-local function getJump()
-    local c = player.Character
-    if not c then return 7.2 end
-    local h = c:FindFirstChild("Humanoid")
-    return h and h.JumpPower or 7.2
-end
-local function setJump(v)
-    v = math.clamp(v, 7.2, 200)
-    local c = player.Character
-    if c then
-        local h = c:FindFirstChild("Humanoid")
-        if h then
-            h.UseJumpPower = true
-            h.JumpPower = v
-            updateJump(v)
-        end
-    end
-end
+local function getJump() local c = player.Character if not c then return 7.2 end local h = c:FindFirstChild("Humanoid") return h and h.JumpPower or 7.2 end
+local function setJump(v) v = math.clamp(v, 7.2, 200) local c = player.Character if c then local h = c:FindFirstChild("Humanoid") if h then h.UseJumpPower = true h.JumpPower = v updateJump(v) end end end
 jumpPlus.MouseButton1Click:Connect(function() setJump(getJump() + 1) end)
 jumpMinus.MouseButton1Click:Connect(function() setJump(getJump() - 1) end)
 
--- FOV
 local camera = workspace.CurrentCamera
-local function updateFOV(value)
-    value = math.clamp(value, 50, 120)
-    camera.FieldOfView = value
-    fovLabel.Text = "fov: " .. math.floor(value)
-end
+local function updateFOV(v) v = math.clamp(v, 50, 120) camera.FieldOfView = v fovLabel.Text = "fov: " .. math.floor(v) end
 fovPlus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView + 5) end)
 fovMinus.MouseButton1Click:Connect(function() updateFOV(camera.FieldOfView - 5) end)
 
@@ -454,11 +377,7 @@ flyBtn.MouseButton1Click:Connect(function()
     if flying then startFly() else stopFly() end
 end)
 player.CharacterAdded:Connect(function()
-    if flying then
-        stopFly()
-        flying = false
-        flyBtn.Text = "FLY"
-    end
+    if flying then stopFly() flying = false flyBtn.Text = "FLY" end
 end)
 
 -- NOCLIP
@@ -494,11 +413,7 @@ local function toggleNoclip()
 end
 noclipBtn.MouseButton1Click:Connect(toggleNoclip)
 player.CharacterAdded:Connect(function()
-    if noclipOn then
-        stopNoclip()
-        noclipOn = false
-        noclipBtn.Text = "NOCLIP"
-    end
+    if noclipOn then stopNoclip() noclipOn = false noclipBtn.Text = "NOCLIP" end
 end)
 
 -- ESP
@@ -534,9 +449,7 @@ espBtn.MouseButton1Click:Connect(function()
         espBtn.Text = "ON"
         updateESP()
         if espConn then espConn:Disconnect() end
-        espConn = runService.RenderStepped:Connect(function()
-            if espActive then updateESP() end
-        end)
+        espConn = runService.RenderStepped:Connect(function() if espActive then updateESP() end end)
     else
         espBtn.Text = "ESP"
         disableESP()
@@ -548,9 +461,7 @@ player.CharacterAdded:Connect(function()
         task.wait(1)
         updateESP()
         if espConn then espConn:Disconnect() end
-        espConn = runService.RenderStepped:Connect(function()
-            if espActive then updateESP() end
-        end)
+        espConn = runService.RenderStepped:Connect(function() if espActive then updateESP() end end)
     end
 end)
 
@@ -558,11 +469,10 @@ end)
 local aimActive = false
 local aimConnection = nil
 local function getClosestPlayer()
-    local closest = nil
-    local minDist = math.huge
-    local character = player.Character
-    if not character then return nil end
-    local hrp = character:FindFirstChild("HumanoidRootPart")
+    local closest, minDist = nil, math.huge
+    local char = player.Character
+    if not char then return nil end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then return nil end
     local myPos = hrp.Position
     for _, plr in ipairs(game.Players:GetPlayers()) do
@@ -570,10 +480,7 @@ local function getClosestPlayer()
             local targetHrp = plr.Character:FindFirstChild("HumanoidRootPart")
             if targetHrp then
                 local dist = (targetHrp.Position - myPos).Magnitude
-                if dist < minDist then
-                    minDist = dist
-                    closest = plr
-                end
+                if dist < minDist then minDist = dist closest = plr end
             end
         end
     end
@@ -583,18 +490,13 @@ local function aimAt(targetPlayer)
     if not targetPlayer or not targetPlayer.Character then return end
     local targetHrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not targetHrp then return end
-    local camera = workspace.CurrentCamera
-    local targetPos = targetHrp.Position + Vector3.new(0, 1.5, 0)
-    local currentPos = camera.CFrame.Position
-    camera.CFrame = CFrame.new(currentPos, targetPos)
+    local cam = workspace.CurrentCamera
+    cam.CFrame = CFrame.new(cam.CFrame.Position, targetHrp.Position + Vector3.new(0,1.5,0))
 end
 local function startAim()
     if aimConnection then aimConnection:Disconnect() end
     aimConnection = runService.RenderStepped:Connect(function()
-        if aimActive then
-            local target = getClosestPlayer()
-            if target then aimAt(target) end
-        end
+        if aimActive then local target = getClosestPlayer() if target then aimAt(target) end end
     end)
 end
 local function stopAim()
@@ -666,13 +568,57 @@ antiAfkBtn.MouseButton1Click:Connect(function()
     if antiAfkActive then startAntiAfk() else stopAntiAfk() end
 end)
 
--- DRAG
+-- INVIS
+local invisible = false
+local origMaterials = {}
+local origTransps = {}
+local function setInvisible(state)
+    local char = player.Character
+    if not char then return end
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            if state then
+                if origMaterials[part] == nil then
+                    origMaterials[part] = part.Material
+                    origTransps[part] = part.Transparency
+                end
+                part.Material = Enum.Material.ForceField
+                part.Transparency = 1
+                part.CastShadow = false
+            else
+                part.Material = origMaterials[part] or Enum.Material.Plastic
+                part.Transparency = origTransps[part] or 0
+                part.CastShadow = true
+            end
+        elseif part:IsA("Decal") or part:IsA("Texture") then
+            part.Visible = not state
+        end
+    end
+    for _, acc in ipairs(char:GetChildren()) do
+        if acc:IsA("Accessory") or acc:IsA("Hat") or acc:IsA("Clothing") then
+            acc.Visible = not state
+            local handle = acc:FindFirstChild("Handle")
+            if handle then
+                if state then handle.CastShadow = false handle.Transparency = 1
+                else handle.CastShadow = true handle.Transparency = 0 end
+            end
+        end
+    end
+end
+invisBtn.MouseButton1Click:Connect(function()
+    invisible = not invisible
+    invisBtn.Text = invisible and "VISIBLE" or "INVIS"
+    setInvisible(invisible)
+end)
+
+-- ===== DRAG (перетаскивание контейнера) =====
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
     local contSize = container.AbsoluteSize
     hubframe.Position = UDim2.new(0, contPos.X + contSize.X + 10, 0, contPos.Y)
 end
+
 local dragContainer = false
 local dragStart, startPos
 title.InputBegan:Connect(function(input)
@@ -681,8 +627,10 @@ title.InputBegan:Connect(function(input)
         dragStart = input.Position
         startPos = container.Position
         input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then dragContainer = false
-            if hubframe.Visible then updateHubframePosition() end
+            if input.UserInputState == Enum.UserInputState.End then
+                dragContainer = false
+                if hubframe.Visible then updateHubframePosition() end
+            end
         end)
     end
 end)
@@ -693,6 +641,7 @@ title.InputChanged:Connect(function(input)
         if hubframe.Visible then updateHubframePosition() end
     end
 end)
+
 local hubsOpen = false
 hubsBtn.MouseButton1Click:Connect(function()
     hubsOpen = not hubsOpen
@@ -701,6 +650,20 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
+-- ===== ТОГГЛ МЕНЮ =====
+local menuVisible = true
+toggleBtn.MouseButton1Click:Connect(function()
+    menuVisible = not menuVisible
+    container.Visible = menuVisible
+    if not menuVisible then
+        hubframe.Visible = false
+        hubsOpen = false
+        hubsBtn.Text = "HUBS"
+    end
+    toggleBtn.Text = menuVisible and "☰" or "⋮"
+end)
+
+-- Обновление дисплея при появлении персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -710,4 +673,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: ANTI-LAG + ANTI-AFK (кнопки выровнены)")
+print("Haxxx Gui V1: добавлена кнопка‑тоггл для скрытия/показа меню")
