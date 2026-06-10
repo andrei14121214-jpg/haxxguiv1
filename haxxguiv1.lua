@@ -1,4 +1,4 @@
--- haxxguiv1 с drag и выровненными кнопками
+-- haxxguiv1 с ESP, перетаскиванием, FLY, NOCLIP, SPEED, JUMP
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,15 +9,15 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 local main = Instance.new("Frame")
 main.Name = "main"
-main.Size = UDim2.new(0, 260, 0, 120)
-main.Position = UDim2.new(0.5, -130, 0.5, -60)
+main.Size = UDim2.new(0, 280, 0, 160)
+main.Position = UDim2.new(0.5, -140, 0.5, -80)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
 main.Active = true
 main.Draggable = true
 main.Parent = gui
 
--- заголовок
+-- заголовок (для перетаскивания)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, 0, 0, 20)
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -27,7 +27,7 @@ title.TextColor3 = Color3.new(1,1,1)
 title.TextSize = 14
 title.Parent = main
 
--- speedinfo
+-- ---- строка скорости ----
 local speedInfo = Instance.new("TextLabel")
 speedInfo.Name = "speedinfo"
 speedInfo.Size = UDim2.new(0, 80, 0, 25)
@@ -58,7 +58,17 @@ plusSpeed.TextColor3 = Color3.new(0,0,0)
 plusSpeed.TextSize = 16
 plusSpeed.Parent = main
 
--- jpinfo
+local flyBtn = Instance.new("TextButton")
+flyBtn.Name = "Flybttn"
+flyBtn.Size = UDim2.new(0, 55, 0, 25)
+flyBtn.Position = UDim2.new(0, 170, 0, 30)
+flyBtn.Text = "FLY"
+flyBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+flyBtn.TextColor3 = Color3.new(1,1,1)
+flyBtn.TextSize = 14
+flyBtn.Parent = main
+
+-- ---- строка прыжка ----
 local jpInfo = Instance.new("TextLabel")
 jpInfo.Name = "jpinfo"
 jpInfo.Size = UDim2.new(0, 80, 0, 25)
@@ -89,17 +99,6 @@ plusJump.TextColor3 = Color3.new(0,0,0)
 plusJump.TextSize = 14
 plusJump.Parent = main
 
--- кнопки FLY и NOCLIP
-local flyBtn = Instance.new("TextButton")
-flyBtn.Name = "Flybttn"
-flyBtn.Size = UDim2.new(0, 55, 0, 25)
-flyBtn.Position = UDim2.new(0, 170, 0, 30)
-flyBtn.Text = "FLY"
-flyBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
-flyBtn.TextColor3 = Color3.new(1,1,1)
-flyBtn.TextSize = 14
-flyBtn.Parent = main
-
 local noclipBtn = Instance.new("TextButton")
 noclipBtn.Name = "noclip"
 noclipBtn.Size = UDim2.new(0, 55, 0, 25)
@@ -110,9 +109,20 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- drag (перетаскивание через заголовок)
+-- ---- кнопка ESP ----
+local espBtn = Instance.new("TextButton")
+espBtn.Name = "ESP"
+espBtn.Size = UDim2.new(0, 100, 0, 25)
+espBtn.Position = UDim2.new(0.5, -50, 0, 105)
+espBtn.Text = "ESP OFF"
+espBtn.BackgroundColor3 = Color3.fromRGB(0,0,0)
+espBtn.TextColor3 = Color3.new(1,1,1)
+espBtn.TextSize = 14
+espBtn.Parent = main
+
+-- ========== DRAG (перетаскивание за заголовок) ==========
 local dragEnabled = false
-local dragInput, dragStart, startPos
+local dragStart, startPos
 title.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         dragEnabled = true
@@ -132,7 +142,7 @@ title.InputChanged:Connect(function(input)
     end
 end)
 
--- ========== ЛОГИКА ==========
+-- ========== SPEED ==========
 local function updateSpeed(v)
     speedInfo.Text = "speed: " .. math.floor(v)
 end
@@ -156,6 +166,7 @@ end
 plusSpeed.MouseButton1Click:Connect(function() setSpeed(getSpeed() + 1) end)
 minusSpeed.MouseButton1Click:Connect(function() setSpeed(getSpeed() - 1) end)
 
+-- ========== JUMP POWER ==========
 local function updateJump(v)
     jpInfo.Text = "jp: " .. string.format("%.1f", v)
 end
@@ -180,7 +191,7 @@ end
 plusJump.MouseButton1Click:Connect(function() setJump(getJump() + 2) end)
 minusJump.MouseButton1Click:Connect(function() setJump(getJump() - 2) end)
 
--- FLY
+-- ========== FLY ==========
 local flying = false
 local bodyGyro, bodyVelocity, flyConn
 local flySpeed = 80
@@ -247,7 +258,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- NOCLIP
+-- ========== NOCLIP ==========
 local noclipOn = false
 local noclipConn = nil
 local function noclipLoop()
@@ -260,30 +271,110 @@ local function noclipLoop()
         end
     end
 end
-noclipBtn.MouseButton1Click:Connect(function()
-    noclipOn = not noclipOn
-    noclipBtn.Text = noclipOn and "CLIP" or "NOCLIP"
-    if noclipOn then
-        if noclipConn then noclipConn:Disconnect() end
-        noclipConn = runService.Stepped:Connect(noclipLoop)
-    else
-        if noclipConn then noclipConn:Disconnect() end
-        local char = player.Character
-        if char then
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = true end
+local function stopNoclip()
+    if noclipConn then
+        noclipConn:Disconnect()
+        noclipConn = nil
+    end
+    local char = player.Character
+    if char then
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
             end
         end
     end
-end)
+end
+local function toggleNoclip()
+    noclipOn = not noclipOn
+    if noclipOn then
+        noclipBtn.Text = "CLIP"
+        if noclipConn then noclipConn:Disconnect() end
+        noclipConn = runService.Stepped:Connect(noclipLoop)
+    else
+        noclipBtn.Text = "NOCLIP"
+        stopNoclip()
+    end
+end
+noclipBtn.MouseButton1Click:Connect(toggleNoclip)
 player.CharacterAdded:Connect(function()
     if noclipOn then
-        if noclipConn then noclipConn:Disconnect() end
+        stopNoclip()
         noclipOn = false
         noclipBtn.Text = "NOCLIP"
     end
 end)
 
+-- ========== ESP (Highlight для всех игроков, кроме себя) ==========
+local espActive = false
+local espHighlights = {}
+local espConnection = nil
+
+local function updateESP()
+    for _, plr in ipairs(game.Players:GetPlayers()) do
+        if plr ~= player then
+            local char = plr.Character
+            if char then
+                if not espHighlights[plr] or espHighlights[plr].Parent ~= char then
+                    if espHighlights[plr] then espHighlights[plr]:Destroy() end
+                    local hl = Instance.new("Highlight")
+                    hl.FillColor = Color3.fromRGB(255, 0, 0)
+                    hl.FillTransparency = 0.7
+                    hl.OutlineColor = Color3.fromRGB(255, 255, 0)
+                    hl.OutlineTransparency = 0
+                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                    hl.Adornee = char
+                    hl.Parent = char
+                    espHighlights[plr] = hl
+                end
+            else
+                if espHighlights[plr] then
+                    espHighlights[plr]:Destroy()
+                    espHighlights[plr] = nil
+                end
+            end
+        end
+    end
+end
+
+local function clearESP()
+    for _, hl in pairs(espHighlights) do
+        if hl then hl:Destroy() end
+    end
+    espHighlights = {}
+end
+
+local function toggleESP()
+    espActive = not espActive
+    espBtn.Text = espActive and "ESP ON" or "ESP OFF"
+    if espActive then
+        updateESP()
+        if espConnection then espConnection:Disconnect() end
+        espConnection = runService.RenderStepped:Connect(function()
+            if espActive then updateESP() end
+        end)
+    else
+        if espConnection then espConnection:Disconnect(); espConnection = nil end
+        clearESP()
+    end
+end
+
+espBtn.MouseButton1Click:Connect(toggleESP)
+
+-- Очистка при удалении игрока
+game.Players.PlayerRemoving:Connect(function(plr)
+    if espHighlights[plr] then
+        espHighlights[plr]:Destroy()
+        espHighlights[plr] = nil
+    end
+end)
+
+-- Обновление при добавлении игрока
+game.Players.PlayerAdded:Connect(function()
+    if espActive then task.wait(0.5); updateESP() end
+end)
+
+-- ========== ИНИЦИАЛИЗАЦИЯ ОТОБРАЖЕНИЯ ==========
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -293,4 +384,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("haxxguiv1 с перетаскиванием и выровненными кнопками загружен.")
+print("Haxxx Gui V1 с ESP загружен. Перетаскивание за заголовок.")
