@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка INVIS (полная невидимость) + ESP + HUBS
+-- haxxguiv1: кнопка MORPH (R6 + аксессуары, сброс при респавне)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -108,24 +108,33 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- === КНОПКИ ESP И INVIS В ОДНОЙ СТРОКЕ ===
+-- === КНОПКИ ESP, INVIS, MORPH ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 65, 0, 25)
+espBtn.Size = UDim2.new(0, 55, 0, 25)
 espBtn.Position = UDim2.new(0, 10, 0, 100)
 espBtn.Text = "ESP OFF"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
 espBtn.TextColor3 = Color3.new(1,1,1)
-espBtn.TextSize = 12
+espBtn.TextSize = 11
 espBtn.Parent = main
 
 local invisBtn = Instance.new("TextButton")
-invisBtn.Size = UDim2.new(0, 65, 0, 25)
-invisBtn.Position = UDim2.new(0, 85, 0, 100)
+invisBtn.Size = UDim2.new(0, 55, 0, 25)
+invisBtn.Position = UDim2.new(0, 70, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
-invisBtn.TextSize = 12
+invisBtn.TextSize = 11
 invisBtn.Parent = main
+
+local morphBtn = Instance.new("TextButton")
+morphBtn.Size = UDim2.new(0, 55, 0, 25)
+morphBtn.Position = UDim2.new(0, 130, 0, 100)
+morphBtn.Text = "MORPH"
+morphBtn.BackgroundColor3 = Color3.new(0,0,0)
+morphBtn.TextColor3 = Color3.new(1,1,1)
+morphBtn.TextSize = 11
+morphBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
 local hubsBtn = Instance.new("TextButton")
@@ -229,32 +238,95 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
+-- === ФУНКЦИЯ MORPH (R6 + аксессуары) ===
+local morphed = false
+local morphAssets = {
+    "80220105414674",  -- ID аксессуара/одежды
+    "75925258547267",
+    "118391977411765"
+}
+local addedItems = {}  -- для хранения добавленных объектов (чтобы удалить при сбросе)
+
+local function applyMorph()
+    if morphed then return end
+    
+    local char = player.Character
+    if not char then return end
+    
+    -- 1. Меняем аватар на R6
+    if player.CharacterHumanoid then
+        local humanoid = char:FindFirstChild("Humanoid")
+        if humanoid and humanoid.RigType ~= Enum.HumanoidRigType.R6 then
+            humanoid.RigType = Enum.HumanoidRigType.R6
+        end
+    end
+    
+    -- 2. Добавляем аксессуары/одежду
+    local function addAsset(assetId)
+        local success, result = pcall(function()
+            return game:GetService("MarketplaceService"):LoadAsset(assetId, player)
+        end)
+        if success and result then
+            local asset = result:FindFirstChildWhichIsA("Accessory") or result:FindFirstChildWhichIsA("Shirt") or result:FindFirstChildWhichIsA("Pants") or result:FindFirstChildWhichIsA("Hat")
+            if asset then
+                asset.Parent = char
+                table.insert(addedItems, asset)
+            else
+                -- Если не нашли нужный объект, удаляем загруженный контейнер
+                result:Destroy()
+            end
+        end
+    end
+    
+    for _, id in ipairs(morphAssets) do
+        addAsset(id)
+    end
+    
+    morphed = true
+    morphBtn.Text = "MORPHED"
+end
+
+local function resetMorph()
+    if not morphed then return end
+    
+    -- Удаляем добавленные аксессуары/одежду
+    for _, item in ipairs(addedItems) do
+        if item and item.Parent then
+            item:Destroy()
+        end
+    end
+    addedItems = {}
+    
+    -- Возвращаем R15 (стандарт в большинстве игр)
+    local char = player.Character
+    if char then
+        local humanoid = char:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.RigType = Enum.HumanoidRigType.R15
+        end
+    end
+    
+    morphed = false
+    morphBtn.Text = "MORPH"
+end
+
+morphBtn.MouseButton1Click:Connect(function()
+    if not morphed then
+        applyMorph()
+    else
+        resetMorph()
+    end
+end)
+
 -- Сброс при респавне
-player.CharacterAdded:Connect(function(char)
+player.CharacterAdded:Connect(function()
+    if morphed then
+        resetMorph()
+    end
     invisible = false
     invisBtn.Text = "INVIS"
     originalMaterials = {}
     originalTransparencies = {}
-    task.wait(0.5)
-    for _, part in ipairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then
-            part.Transparency = 0
-            part.CastShadow = true
-            part.Material = Enum.Material.Plastic
-        elseif part:IsA("Decal") or part:IsA("Texture") then
-            part.Visible = true
-        end
-    end
-    for _, acc in ipairs(char:GetChildren()) do
-        if acc:IsA("Accessory") or acc:IsA("Hat") or acc:IsA("Clothing") then
-            acc.Visible = true
-            local handle = acc:FindFirstChild("Handle")
-            if handle then
-                handle.Transparency = 0
-                handle.CastShadow = true
-            end
-        end
-    end
 end)
 
 -- ========== ЛОГИКА (speed, jump, fly, noclip, esp) ==========
@@ -509,4 +581,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка INVIS работает (полная невидимость).")
+print("Haxxx Gui V1: кнопка MORPH (R6 + аксессуары, сброс при респавне)")
