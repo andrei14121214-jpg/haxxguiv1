@@ -1,4 +1,4 @@
--- haxxguiv1: добавлен AIM (авто-прицел)
+-- haxxguiv1: AIM (авто-прицел) + ESP + INVIS
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,8 +9,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР (основное окно + кнопка HUBS)
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 400, 0, 170)
-container.Position = UDim2.new(0.5, -200, 0.5, -85)
+container.Size = UDim2.new(0, 420, 0, 170)
+container.Position = UDim2.new(0.5, -210, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 375, 0, 170)
+main.Size = UDim2.new(0, 395, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -110,7 +110,6 @@ noclipBtn.Parent = main
 
 -- === Строка FOV ===
 local fovLabel = Instance.new("TextLabel")
-fovLabel.Name = "fovinfo"
 fovLabel.Size = UDim2.new(0, 80, 0, 25)
 fovLabel.Position = UDim2.new(0, 10, 0, 100)
 fovLabel.BackgroundColor3 = Color3.new(0,0,0)
@@ -137,7 +136,7 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ ESP, AIM ===
+-- === КНОПКИ ESP, AIM, INVIS ===
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 55, 0, 25)
 espBtn.Position = UDim2.new(0, 170, 0, 100)
@@ -155,6 +154,15 @@ aimBtn.BackgroundColor3 = Color3.new(0,0,0)
 aimBtn.TextColor3 = Color3.new(1,1,1)
 aimBtn.TextSize = 12
 aimBtn.Parent = main
+
+local invisBtn = Instance.new("TextButton")
+invisBtn.Size = UDim2.new(0, 55, 0, 25)
+invisBtn.Position = UDim2.new(0, 290, 0, 100)
+invisBtn.Text = "INVIS"
+invisBtn.BackgroundColor3 = Color3.new(0,0,0)
+invisBtn.TextColor3 = Color3.new(1,1,1)
+invisBtn.TextSize = 12
+invisBtn.Parent = main
 
 -- === ВЕРТИКАЛЬНАЯ КНОПКА HUBS ===
 local hubsBtn = Instance.new("TextButton")
@@ -201,6 +209,61 @@ iyBtn.MouseButton1Click:Connect(function()
     pcall(function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
     end)
+end)
+
+-- === ФУНКЦИЯ НЕВИДИМОСТИ ===
+local invisible = false
+local originalMaterials = {}
+local originalTransparencies = {}
+
+local function setInvisible(state)
+    local char = player.Character
+    if not char then return end
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            if state then
+                if originalMaterials[part] == nil then
+                    originalMaterials[part] = part.Material
+                    originalTransparencies[part] = part.Transparency
+                end
+                part.Material = Enum.Material.ForceField
+                part.Transparency = 1
+                part.CastShadow = false
+            else
+                if originalMaterials[part] then
+                    part.Material = originalMaterials[part]
+                    part.Transparency = originalTransparencies[part]
+                else
+                    part.Material = Enum.Material.Plastic
+                    part.Transparency = 0
+                end
+                part.CastShadow = true
+            end
+        elseif part:IsA("Decal") or part:IsA("Texture") then
+            part.Visible = not state
+        end
+    end
+    for _, acc in ipairs(char:GetChildren()) do
+        if acc:IsA("Accessory") or acc:IsA("Hat") or acc:IsA("Clothing") then
+            acc.Visible = not state
+            local handle = acc:FindFirstChild("Handle")
+            if handle and handle:IsA("BasePart") then
+                if state then
+                    handle.CastShadow = false
+                    handle.Transparency = 1
+                else
+                    handle.CastShadow = true
+                    handle.Transparency = 0
+                end
+            end
+        end
+    end
+end
+
+invisBtn.MouseButton1Click:Connect(function()
+    invisible = not invisible
+    invisBtn.Text = invisible and "VISIBLE" or "INVIS"
+    setInvisible(invisible)
 end)
 
 -- === ЛОГИКА СКОРОСТИ ===
@@ -449,7 +512,7 @@ local function aimAt(targetPlayer)
     local targetHrp = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
     if not targetHrp then return end
     local camera = workspace.CurrentCamera
-    local targetPos = targetHrp.Position + Vector3.new(0, 1.5, 0) -- наводим в грудь/голову
+    local targetPos = targetHrp.Position + Vector3.new(0, 1.5, 0)
     local currentPos = camera.CFrame.Position
     local cf = CFrame.new(currentPos, targetPos)
     camera.CFrame = cf
@@ -542,4 +605,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: авто-прицел (AIM) добавлен. Работает плавно.")
+print("Haxxx Gui V1: ESP, AIM, INVIS, FOV, SPEED, JUMP, FLY, NOCLIP, HUBS")
