@@ -1,4 +1,4 @@
--- haxxguiv1: KILL (ввод ника) вместо FLING
+-- haxxguiv1: ANTI-LAG + ANTI-AFK (убрана KILL)
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,8 +9,8 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 560, 0, 170)
-container.Position = UDim2.new(0.5, -280, 0.5, -85)
+container.Size = UDim2.new(0, 600, 0, 170)
+container.Position = UDim2.new(0.5, -300, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
 container.Draggable = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 535, 0, 170)
+main.Size = UDim2.new(0, 575, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -136,9 +136,9 @@ fovPlus.TextColor3 = Color3.new(0,0,0)
 fovPlus.TextSize = 16
 fovPlus.Parent = main
 
--- === КНОПКИ (ESP, AIM, KILL, INVIS) ===
+-- === КНОПКИ (ESP, AIM, ANTI-LAG, ANTI-AFK, INVIS) ===
 local espBtn = Instance.new("TextButton")
-espBtn.Size = UDim2.new(0, 65, 0, 25)
+espBtn.Size = UDim2.new(0, 60, 0, 25)
 espBtn.Position = UDim2.new(0, 155, 0, 100)
 espBtn.Text = "ESP"
 espBtn.BackgroundColor3 = Color3.new(0,0,0)
@@ -147,26 +147,35 @@ espBtn.TextSize = 11
 espBtn.Parent = main
 
 local aimBtn = Instance.new("TextButton")
-aimBtn.Size = UDim2.new(0, 65, 0, 25)
-aimBtn.Position = UDim2.new(0, 225, 0, 100)
+aimBtn.Size = UDim2.new(0, 60, 0, 25)
+aimBtn.Position = UDim2.new(0, 220, 0, 100)
 aimBtn.Text = "AIM"
 aimBtn.BackgroundColor3 = Color3.new(0,0,0)
 aimBtn.TextColor3 = Color3.new(1,1,1)
 aimBtn.TextSize = 11
 aimBtn.Parent = main
 
-local killBtn = Instance.new("TextButton")
-killBtn.Size = UDim2.new(0, 65, 0, 25)
-killBtn.Position = UDim2.new(0, 295, 0, 100)
-killBtn.Text = "KILL"
-killBtn.BackgroundColor3 = Color3.new(0,0,0)
-killBtn.TextColor3 = Color3.new(1,1,1)
-killBtn.TextSize = 11
-killBtn.Parent = main
+local antiLagBtn = Instance.new("TextButton")
+antiLagBtn.Size = UDim2.new(0, 65, 0, 25)
+antiLagBtn.Position = UDim2.new(0, 285, 0, 100)
+antiLagBtn.Text = "A-LAG"
+antiLagBtn.BackgroundColor3 = Color3.new(0,0,0)
+antiLagBtn.TextColor3 = Color3.new(1,1,1)
+antiLagBtn.TextSize = 11
+antiLagBtn.Parent = main
+
+local antiAfkBtn = Instance.new("TextButton")
+antiAfkBtn.Size = UDim2.new(0, 65, 0, 25)
+antiAfkBtn.Position = UDim2.new(0, 355, 0, 100)
+antiAfkBtn.Text = "A-AFK"
+antiAfkBtn.BackgroundColor3 = Color3.new(0,0,0)
+antiAfkBtn.TextColor3 = Color3.new(1,1,1)
+antiAfkBtn.TextSize = 11
+antiAfkBtn.Parent = main
 
 local invisBtn = Instance.new("TextButton")
 invisBtn.Size = UDim2.new(0, 65, 0, 25)
-invisBtn.Position = UDim2.new(0, 365, 0, 100)
+invisBtn.Position = UDim2.new(0, 425, 0, 100)
 invisBtn.Text = "INVIS"
 invisBtn.BackgroundColor3 = Color3.new(0,0,0)
 invisBtn.TextColor3 = Color3.new(1,1,1)
@@ -615,83 +624,104 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === KILL (с вводом ника) ===
-local function killPlayer(targetName)
-    for _, plr in ipairs(game.Players:GetPlayers()) do
-        if plr.Name:lower() == targetName:lower() or plr.DisplayName:lower() == targetName:lower() then
-            if plr.Character and plr.Character:FindFirstChild("Humanoid") then
-                plr.Character.Humanoid.Health = 0
-                return true
+-- === ANTI-LAG (уменьшение графики и частиц) ===
+local antiLagActive = false
+local originalMaterials = {}
+
+local function applyAntiLag(state)
+    if state then
+        -- Уменьшаем качество графики (если применимо)
+        settings().Rendering.QualityLevel = 1
+        -- Удаляем частицы и свет
+        for _, v in ipairs(workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") then
+                v.Enabled = false
+            elseif v:IsA("Decal") then
+                v.Transparency = 1
             end
         end
+        print("[Anti-Lag] Включён (графика снижена, частицы отключены)")
+    else
+        settings().Rendering.QualityLevel = 21
+        for _, v in ipairs(workspace:GetDescendants()) do
+            if v:IsA("ParticleEmitter") or v:IsA("Fire") or v:IsA("Smoke") or v:IsA("Sparkles") then
+                v.Enabled = true
+            elseif v:IsA("Decal") then
+                v.Transparency = 0
+            end
+        end
+        print("[Anti-Lag] Выключен (графика восстановлена)")
     end
-    return false
 end
 
-killBtn.MouseButton1Click:Connect(function()
-    local dialog = Instance.new("ScreenGui")
-    dialog.Name = "KillDialog"
-    dialog.Parent = player.PlayerGui
-    
-    local frame = Instance.new("Frame")
-    frame.Size = UDim2.new(0, 300, 0, 120)
-    frame.Position = UDim2.new(0.5, -150, 0.5, -60)
-    frame.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    frame.BackgroundTransparency = 0.1
-    frame.BorderSizePixel = 0
-    frame.Parent = dialog
-    
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 30)
-    title.BackgroundColor3 = Color3.new(0,0,0)
-    title.Text = "Введите ник игрока"
-    title.TextColor3 = Color3.new(1,1,1)
-    title.TextSize = 14
-    title.Parent = frame
-    
-    local input = Instance.new("TextBox")
-    input.Size = UDim2.new(1, -20, 0, 30)
-    input.Position = UDim2.new(0, 10, 0, 35)
-    input.BackgroundColor3 = Color3.new(50,50,50)
-    input.TextColor3 = Color3.new(1,1,1)
-    input.Text = ""
-    input.PlaceholderText = "Ник игрока..."
-    input.TextSize = 14
-    input.Parent = frame
-    
-    local confirm = Instance.new("TextButton")
-    confirm.Size = UDim2.new(0, 80, 0, 30)
-    confirm.Position = UDim2.new(0.5, -90, 0, 75)
-    confirm.Text = "Убить"
-    confirm.BackgroundColor3 = Color3.fromRGB(150,0,0)
-    confirm.TextColor3 = Color3.new(1,1,1)
-    confirm.TextSize = 14
-    confirm.Parent = frame
-    
-    local cancel = Instance.new("TextButton")
-    cancel.Size = UDim2.new(0, 80, 0, 30)
-    cancel.Position = UDim2.new(0.5, 10, 0, 75)
-    cancel.Text = "Отмена"
-    cancel.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    cancel.TextColor3 = Color3.new(1,1,1)
-    cancel.TextSize = 14
-    cancel.Parent = frame
-    
-    confirm.MouseButton1Click:Connect(function()
-        local name = input.Text
-        if name ~= "" then
-            if killPlayer(name) then
-                print("[KILL] Убит игрок: " .. name)
-            else
-                print("[KILL] Игрок не найден: " .. name)
-            end
+antiLagBtn.MouseButton1Click:Connect(function()
+    antiLagActive = not antiLagActive
+    antiLagBtn.Text = antiLagActive and "A-L ON" or "A-LAG"
+    applyAntiLag(antiLagActive)
+end)
+
+player.CharacterAdded:Connect(function()
+    if antiLagActive then
+        antiLagActive = false
+        antiLagBtn.Text = "A-LAG"
+        applyAntiLag(false)
+    end
+end)
+
+-- === ANTI-AFK (защита от кика за бездействие) ===
+local antiAfkActive = false
+local antiAfkConnection = nil
+local lastMove = tick()
+
+local function simulateActivity()
+    if not antiAfkActive then return end
+    -- Эмулируем движение камеры или нажатие клавиш
+    if tick() - lastMove > 50 then
+        local uis = game:GetService("UserInputService")
+        -- Имитируем движение мыши (без реального вмешательства)
+        local cam = workspace.CurrentCamera
+        local cf = cam.CFrame
+        cam.CFrame = cf * CFrame.Angles(0, math.rad(1), 0)
+        task.wait(0.1)
+        cam.CFrame = cf
+        lastMove = tick()
+    end
+end
+
+local function startAntiAfk()
+    if antiAfkConnection then antiAfkConnection:Disconnect() end
+    antiAfkConnection = game:GetService("RunService").Heartbeat:Connect(function()
+        if antiAfkActive then
+            simulateActivity()
         end
-        dialog:Destroy()
     end)
-    
-    cancel.MouseButton1Click:Connect(function()
-        dialog:Destroy()
-    end)
+end
+
+local function stopAntiAfk()
+    if antiAfkConnection then
+        antiAfkConnection:Disconnect()
+        antiAfkConnection = nil
+    end
+end
+
+antiAfkBtn.MouseButton1Click:Connect(function()
+    antiAfkActive = not antiAfkActive
+    antiAfkBtn.Text = antiAfkActive and "A-A ON" or "A-AFK"
+    if antiAfkActive then
+        startAntiAfk()
+        print("[Anti-AFK] Включена защита от кика")
+    else
+        stopAntiAfk()
+        print("[Anti-AFK] Защита отключена")
+    end
+end)
+
+player.CharacterAdded:Connect(function()
+    if antiAfkActive then
+        antiAfkActive = false
+        antiAfkBtn.Text = "A-AFK"
+        stopAntiAfk()
+    end
 end)
 
 -- === DRAG ===
@@ -743,4 +773,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: KILL (с вводом ника) добавлена вместо FLING")
+print("Haxxx Gui V1: ANTI-LAG (графика/частицы) + ANTI-AFK (защита от кика)")
