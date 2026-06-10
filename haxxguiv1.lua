@@ -1,4 +1,4 @@
--- haxxguiv1: кнопка KNIFE (удалён MORPH), исправлены вылезания текста
+-- haxxguiv1: настоящий нож из частей (Tool) с анимацией и уроном
 local player = game.Players.LocalPlayer
 if player.PlayerGui:FindFirstChild("haxxguiv1") then player.PlayerGui.haxxguiv1:Destroy() end
 
@@ -9,7 +9,7 @@ gui.Parent = player:WaitForChild("PlayerGui")
 
 -- КОНТЕЙНЕР (основное окно + кнопка HUBS)
 local container = Instance.new("Frame")
-container.Size = UDim2.new(0, 370, 0, 170)  -- шире на 25
+container.Size = UDim2.new(0, 370, 0, 170)
 container.Position = UDim2.new(0.5, -185, 0.5, -85)
 container.BackgroundTransparency = 1
 container.Active = true
@@ -18,7 +18,7 @@ container.Parent = gui
 
 -- ОСНОВНОЕ ОКНО
 local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 345, 0, 170)  -- шире
+main.Size = UDim2.new(0, 345, 0, 170)
 main.Position = UDim2.new(0, 25, 0, 0)
 main.BackgroundColor3 = Color3.fromRGB(88, 88, 88)
 main.BackgroundTransparency = 0.2
@@ -108,7 +108,7 @@ noclipBtn.TextColor3 = Color3.new(1,1,1)
 noclipBtn.TextSize = 14
 noclipBtn.Parent = main
 
--- === КНОПКИ ESP, INVIS, KNIFE (шире, чтобы текст влезал) ===
+-- === КНОПКИ ESP, INVIS, KNIFE ===
 local espBtn = Instance.new("TextButton")
 espBtn.Size = UDim2.new(0, 70, 0, 25)
 espBtn.Position = UDim2.new(0, 10, 0, 100)
@@ -179,7 +179,7 @@ iyBtn.Parent = hubframe
 
 iyBtn.MouseButton1Click:Connect(function()
     pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyeld/master/source"))()
     end)
 end)
 
@@ -238,52 +238,98 @@ invisBtn.MouseButton1Click:Connect(function()
     setInvisible(invisible)
 end)
 
--- === НОЖ (Tool) ===
+-- === НАСТОЯЩИЙ НОЖ (Tool) ===
 local knife = nil
-local function giveKnife()
-    if knife and knife.Parent then
-        knife:Destroy()
-    end
+local function createKnife()
+    local tool = Instance.new("Tool")
+    tool.Name = "Combat Knife"
+    tool.RequiresHandle = true
+    tool.CanBeDropped = false
+    tool.ToolTip = "Боевой нож | Урон: 25 HP"
     
-    knife = Instance.new("Tool")
-    knife.Name = "Knife"
-    knife.RequiresHandle = true
-    knife.CanBeDropped = false
-    knife.Parent = player.Backpack
-    
+    -- Рукоять
     local handle = Instance.new("Part")
     handle.Name = "Handle"
-    handle.Size = Vector3.new(0.5, 0.1, 1.2)
+    handle.Size = Vector3.new(0.6, 0.2, 1.2)
     handle.Shape = Enum.PartType.Block
-    handle.Material = Enum.Material.Metal
-    handle.Color = Color3.fromRGB(192, 192, 192)
+    handle.Material = Enum.Material.Wood
+    handle.Color = Color3.fromRGB(101, 67, 33)  -- тёмное дерево
+    handle.BrickColor = BrickColor.new("Brown")
     handle.CanCollide = false
-    handle.Parent = knife
+    handle.Parent = tool
     
+    -- Гарда (ограничитель)
+    local guard = Instance.new("Part")
+    guard.Name = "Guard"
+    guard.Size = Vector3.new(0.8, 0.1, 0.2)
+    guard.Position = Vector3.new(0, 0, 0.5)
+    guard.Material = Enum.Material.Metal
+    guard.Color = Color3.fromRGB(192, 192, 192)
+    guard.CanCollide = false
+    guard.Parent = handle
+    
+    -- Лезвие
     local blade = Instance.new("Part")
     blade.Name = "Blade"
-    blade.Size = Vector3.new(0.4, 0.05, 1.5)
-    blade.Position = Vector3.new(0, 0, 0.8)
+    blade.Size = Vector3.new(0.4, 0.1, 1.6)
+    blade.Position = Vector3.new(0, 0, 1.1)
     blade.Material = Enum.Material.Metal
     blade.Color = Color3.fromRGB(220, 220, 255)
+    blade.BrickColor = BrickColor.new("Silver")
     blade.CanCollide = false
     blade.Parent = handle
     
-    knife.Handle = handle
+    -- Остриё (конус)
+    local tip = Instance.new("Part")
+    tip.Name = "Tip"
+    tip.Size = Vector3.new(0.3, 0.3, 0.5)
+    tip.Position = Vector3.new(0, 0, 1.9)
+    tip.Shape = Enum.PartType.Cylinder
+    tip.Material = Enum.Material.Metal
+    tip.Color = Color3.fromRGB(220, 220, 255)
+    tip.BrickColor = BrickColor.new("Silver")
+    tip.CanCollide = false
+    tip.Parent = handle
     
+    -- Обмотка рукояти (красная лента)
+    local grip = Instance.new("Part")
+    grip.Name = "Grip"
+    grip.Size = Vector3.new(0.65, 0.15, 0.8)
+    grip.Position = Vector3.new(0, 0, -0.3)
+    grip.Material = Enum.Material.Fabric
+    grip.Color = Color3.fromRGB(180, 0, 0)
+    grip.BrickColor = BrickColor.new("Really red")
+    grip.CanCollide = false
+    grip.Parent = handle
+    
+    tool.Handle = handle
+    
+    -- Анимация и урон
     local debounce = false
-    knife.Activated:Connect(function()
+    tool.Activated:Connect(function()
         if debounce then return end
         debounce = true
         
         local char = player.Character
         if char and handle then
+            -- Анимация: взмах
             local originalCF = handle.CFrame
-            handle.CFrame = handle.CFrame * CFrame.Angles(0, 0, math.rad(-60))
+            -- Взмах вправо-вниз
+            handle.CFrame = handle.CFrame * CFrame.Angles(math.rad(-30), math.rad(20), math.rad(-45))
             task.wait(0.05)
             handle.CFrame = originalCF
-            task.wait(0.1)
             
+            -- Эффект свечения при ударе (визуал)
+            local glow = Instance.new("SelectionBox")
+            glow.Adornee = handle
+            glow.Color3 = Color3.fromRGB(255, 0, 0)
+            glow.LineThickness = 0.1
+            glow.Transparency = 0.5
+            glow.Parent = handle
+            task.wait(0.1)
+            glow:Destroy()
+            
+            -- Поиск цели и нанесение урона
             for _, plr in ipairs(game.Players:GetPlayers()) do
                 if plr ~= player and plr.Character then
                     local targetChar = plr.Character
@@ -291,12 +337,14 @@ local function giveKnife()
                     if hrp and (hrp.Position - handle.Position).Magnitude < 5 then
                         local humanoid = targetChar:FindFirstChild("Humanoid")
                         if humanoid then
-                            humanoid:TakeDamage(20)
+                            humanoid:TakeDamage(25)
+                            -- Эффект крови
                             local blood = Instance.new("ParticleEmitter")
-                            blood.Rate = 50
-                            blood.Lifetime = NumberRange.new(0.5)
+                            blood.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+                            blood.Rate = 100
+                            blood.Lifetime = NumberRange.new(0.3)
                             blood.SpreadAngle = Vector2.new(360, 360)
-                            blood.Speed = NumberRange.new(2)
+                            blood.Speed = NumberRange.new(3)
                             blood.Parent = handle
                             task.wait(0.2)
                             blood:Destroy()
@@ -306,10 +354,19 @@ local function giveKnife()
             end
         end
         
-        task.wait(0.3)
+        task.wait(0.4)
         debounce = false
     end)
     
+    return tool
+end
+
+local function giveKnife()
+    if knife and knife.Parent then
+        knife:Destroy()
+    end
+    knife = createKnife()
+    knife.Parent = player.Backpack
     knifeBtn.Text = "KNIFE OUT"
 end
 
@@ -542,7 +599,7 @@ player.CharacterAdded:Connect(function()
     end
 end)
 
--- === Функции перемещения контейнера и окна HUBS ===
+-- === Функции перемещения ===
 local function updateHubframePosition()
     if not container or not hubframe then return end
     local contPos = container.AbsolutePosition
@@ -581,7 +638,7 @@ hubsBtn.MouseButton1Click:Connect(function()
     if hubsOpen then updateHubframePosition() end
 end)
 
--- Обновление отображения при появлении персонажа
+-- Обновление дисплея при появлении персонажа
 local function onChar(char)
     local hum = char:WaitForChild("Humanoid")
     updateSpeed(hum.WalkSpeed)
@@ -591,4 +648,4 @@ local function onChar(char)
 end
 if player.Character then onChar(player.Character) else player.CharacterAdded:Connect(onChar) end
 
-print("Haxxx Gui V1: кнопка MORPH удалена, добавлена KNIFE, текст не вылезает")
+print("Haxxx Gui V1: настоящий нож (рукоять, лезвие, гарда) с анимацией и уроном 25 HP")
